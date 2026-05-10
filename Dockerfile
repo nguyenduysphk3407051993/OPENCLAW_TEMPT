@@ -165,18 +165,38 @@ RUN set -eux; \
 
 # ============================================================================
 # 3. GLOBAL NPM TOOLS — Gemini, Codex, Claude Code, openzca, pnpm/yarn/pm2
+#    Cài 2 lần: ROOT (/usr/local) + USER openclaw (/home/openclaw/.npm-global)
+#    để chắc chắn binary có trong PATH dù volume npm-global có override hay không
 # ============================================================================
-RUN npm install -g \
+RUN set -eux; \
+    # Install as root → /usr/local/bin (always available)
+    npm install -g \
         acpx@latest \
         @google/gemini-cli \
         @openai/codex \
         @anthropic-ai/claude-code \
         openzca \
-        pnpm yarn pm2 ts-node typescript \
-    && for bin in acpx gemini codex claude openzca pnpm yarn pm2 ts-node tsc; do \
-         ln -sf "$(npm prefix -g)/bin/$bin" "/usr/local/bin/$bin" 2>/dev/null || true; \
-       done \
-    && npm cache clean --force
+        pnpm yarn pm2 ts-node typescript; \
+    # Verify openzca thực sự có
+    if ! command -v openzca >/dev/null 2>&1; then \
+      echo "❌ openzca không cài được vào /usr/local/bin"; exit 1; \
+    fi; \
+    echo "✅ openzca: $(which openzca) → $(openzca --version 2>&1 | head -1 || echo 'no version')"; \
+    # Symlink rõ ràng tới /usr/local/bin (an toàn)
+    NPM_PREFIX=$(npm config get prefix); \
+    for bin in acpx gemini codex claude openzca pnpm yarn pm2 ts-node tsc; do \
+      if [ -f "$NPM_PREFIX/bin/$bin" ] && [ ! -e "/usr/local/bin/$bin" ]; then \
+        ln -sf "$NPM_PREFIX/bin/$bin" "/usr/local/bin/$bin"; \
+      fi; \
+    done; \
+    npm cache clean --force
+
+# ---- 3b. Cài openzca lần 2 cho user openclaw — sẽ vào /home/openclaw/.npm-global
+#         Volume mount runtime sẽ không xoá vì entrypoint copy lại nếu thiếu
+RUN sudo -u openclaw bash -c ' \
+      mkdir -p /home/openclaw/.npm-global && \
+      npm install -g openzca @google/gemini-cli @anthropic-ai/claude-code 2>&1 | tail -5 \
+    ' || echo "⚠️ Cài user-level fail, vẫn có bản root /usr/local/bin"
 
 # ============================================================================
 # 4. PYTHON STACK — Office, PDF, Dashboard, Video, BG-removal, Crawl4AI

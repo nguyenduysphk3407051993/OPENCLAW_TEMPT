@@ -258,6 +258,24 @@ else:
 PYFIX
 
 # ============================================
+# BƯỚC 3.5: ĐẢM BẢO openzca KHẢ DỤNG (self-heal nếu volume npm-global rỗng)
+# ============================================
+echo ""
+echo "[entrypoint] 🔧 Verify openzca..."
+if ! $GOSU openclaw bash -lc 'command -v openzca >/dev/null 2>&1'; then
+    echo "[entrypoint] ⚠️ openzca không thấy trong PATH của user openclaw — cài lại..."
+    if [ -f /usr/local/bin/openzca ]; then
+        echo "[entrypoint] ✅ openzca có ở /usr/local/bin (root install) — symlink tới user bin"
+        $GOSU openclaw bash -c 'mkdir -p /home/openclaw/.npm-global/bin && ln -sf /usr/local/bin/openzca /home/openclaw/.npm-global/bin/openzca'
+    else
+        echo "[entrypoint] 📥 Cài openzca via npm (chạy như openclaw)..."
+        $GOSU openclaw bash -lc 'npm install -g openzca 2>&1 | tail -5' || \
+            echo "[entrypoint] ❌ Cài openzca FAIL — plugin openzalo sẽ lỗi spawn"
+    fi
+fi
+$GOSU openclaw bash -lc 'echo "[entrypoint] openzca path: $(which openzca 2>&1 || echo NOT_FOUND)"'
+
+# ============================================
 # BƯỚC 4: CÀI OPENZALO PLUGIN — 6-step
 # ============================================
 echo ""
