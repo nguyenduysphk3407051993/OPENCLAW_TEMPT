@@ -176,16 +176,16 @@ else
 fi
 
 # ============================================
-# BƯỚC 3: openclaw.json mặc định nếu chưa có
+# BƯỚC 3: openclaw.json — sinh nếu chưa có + auto-fix config cũ lỗi
 # ============================================
 if [ ! -f "$CONFIG_FILE" ]; then
     echo ""
-    echo "[entrypoint] ⚡ Sinh openclaw.json mặc định..."
+    echo "[entrypoint] ⚡ Sinh openclaw.json mặc định (mode=local + bind=lan)..."
     cat > "$CONFIG_FILE" << EOF
 {
   "gateway": {
     "port": 18789,
-    "mode": "remote",
+    "mode": "local",
     "bind": "lan",
     "controlUi": {
       "enabled": true,
@@ -199,6 +199,63 @@ if [ ! -f "$CONFIG_FILE" ]; then
 EOF
     chown openclaw:openclaw "$CONFIG_FILE"
 fi
+
+# ---- Auto-patch config cũ (chạy mọi lần start để self-heal) ----
+echo "[entrypoint] 🔧 Auto-patch openclaw.json (fix mode=remote thiếu URL + schema cũ)..."
+$GOSU openclaw python3 - "$CONFIG_FILE" << 'PYFIX'
+import json, sys, os
+p = sys.argv[1]
+if not os.path.exists(p):
+    sys.exit(0)
+try:
+    with open(p, 'r', encoding='utf-8') as f:
+        cfg = json.load(f)
+except Exception as e:
+    print(f"[python] Bo qua patch (config khong parse duoc): {e}")
+    sys.exit(0)
+
+changed = False
+
+# Fix 1: gateway.mode=remote nhung thieu remote.url -> chuyen sang local
+gw = cfg.setdefault('gateway', {})
+if gw.get('mode') == 'remote':
+    remote = gw.get('remote', {})
+    if not remote.get('url'):
+        print("[python] gateway.mode=remote thieu URL -> doi sang local")
+        gw['mode'] = 'local'
+        changed = True
+gw.setdefault('bind', 'lan')
+
+# Fix 2: channels.openzalo schema cu - chi giu key hop le
+allowed_openzalo = {
+    'enabled', 'dmPolicy', 'groupPolicy',
+    'groupAllowFrom', 'allowFrom', 'dmAllowFrom'
+}
+ch = cfg.setdefault('channels', {})
+oz = ch.get('openzalo')
+if isinstance(oz, dict):
+    bad = [k for k in list(oz.keys()) if k not in allowed_openzalo]
+    if bad:
+        print(f"[python] channels.openzalo - xoa key khong hop le: {bad}")
+        for k in bad:
+            oz.pop(k, None)
+        changed = True
+    # Bao dam co cac key toi thieu
+    if oz.get('enabled') is None:
+        oz['enabled'] = True; changed = True
+    if 'dmPolicy' not in oz:
+        oz['dmPolicy'] = 'pairing'; changed = True
+    if 'groupPolicy' not in oz:
+        oz['groupPolicy'] = 'open'; changed = True
+
+if changed:
+    with open(p + '.bak', 'w', encoding='utf-8') as f:
+        json.dump(cfg, f, indent=2, ensure_ascii=False)
+    os.replace(p + '.bak', p)
+    print("[python] DA PATCH config!")
+else:
+    print("[python] config OK, khong can patch")
+PYFIX
 
 # ============================================
 # BƯỚC 4: CÀI OPENZALO PLUGIN — 6-step
@@ -259,7 +316,7 @@ if [ ! -f "$MARKER_OPENZALO" ]; then
         cp "$CONFIG_FILE" "$CONFIG_FILE.bak" 2>/dev/null || true
         chown openclaw:openclaw "$CONFIG_FILE.bak" 2>/dev/null || true
 
-        echo "[openzalo] 📝 Thêm channels.openzalo..."
+        echo "[openzalo] 📝 Thêm channels.openzalo (schema mới — minimal)..."
         $GOSU openclaw python3 - "$CONFIG_FILE" << 'PYEOF'
 import json, sys
 config_file = sys.argv[1]
@@ -271,17 +328,15 @@ except Exception as e:
     sys.exit(1)
 config.setdefault('channels', {})
 if 'openzalo' not in config['channels']:
+    # Chi giu cac key duoc schema moi cho phep
     config['channels']['openzalo'] = {
         'enabled': True,
         'dmPolicy': 'pairing',
-        'groupPolicy': 'allowlist',
-        'groupRequireMention': True,
-        'sendFailureNotice': True,
-        'textChunkLimit': 2000
+        'groupPolicy': 'open'
     }
     with open(config_file, 'w', encoding='utf-8') as f:
         json.dump(config, f, indent=2, ensure_ascii=False)
-    print('[python] Da them channels.openzalo')
+    print('[python] Da them channels.openzalo (minimal)')
 else:
     print('[python] channels.openzalo da ton tai')
 PYEOF

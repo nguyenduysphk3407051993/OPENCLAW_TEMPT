@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose *)",
+      "Bash(bash -n \"D:/MYDOCUMENT/LAPTRINH/AI_AGENT/openclaw_ver6/docker/entrypoint.sh\")"
+    ]
+  }
+}

@@ -320,7 +320,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=3 \
     CMD curl -sf http://localhost:18789/health || exit 1
 
 STOPSIGNAL SIGTERM
-WORKDIR /home/openclaw/.openclaw/workspace
+# WORKDIR = HOME (an toàn build-time, không phụ thuộc volume mount).
+# Entrypoint sẽ `cd` sang workspace trước khi exec CMD.
+WORKDIR /home/openclaw
 EXPOSE 18789
 
 ENTRYPOINT ["tini", "--", "/usr/local/bin/entrypoint.sh"]

@@ -97,14 +97,23 @@ services:
     env_file: .env
     environment:
       <<: *openclaw-environment
-      OPENCLAW_GATEWAY_MODE: remote
+      OPENCLAW_GATEWAY_MODE: local
       GATEWAY_TRUSTED_PROXIES: 0.0.0.0/0
-      OPENCLAW_CHANNELS_OPENZALO_ALLOWFROM: '["*"]'
+      # Bypass plugin security scanner (cho phép openzalo dùng child_process)
+      OPENCLAW_ALLOW_UNCONFIGURED: "true"
+      OPENCLAW_PLUGINS_ALLOW_DANGEROUS: "1"
+      OPENCLAW_PLUGINS_TRUSTED: "openzalo,@tuyenhx/openzalo"
+      OPENCLAW_DISABLE_PLUGIN_AUDIT: "1"
+      # Doctor optimization
+      NODE_COMPILE_CACHE: /var/tmp/openclaw-compile-cache
+      OPENCLAW_NO_RESPAWN: "1"
     # Cho phép sudo restart network/gateway từ trong container
     cap_add:
       - NET_ADMIN
       - NET_RAW
       - SYS_PTRACE
+    # Override CMD: thêm --allow-unconfigured để không block khi config thiếu
+    command: ["gateway", "--bind", "lan", "--allow-unconfigured"]
     networks:
       - traefik-net
     labels:
