@@ -295,34 +295,17 @@ RUN chmod -R go+rX /app 2>/dev/null || true \
 # ============================================================================
 # 6. HELPER SCRIPTS — install-pkg / install-pip / install-npm runtime
 # ============================================================================
-RUN cat > /usr/local/bin/install-pkg << 'EOF'
-#!/bin/bash
-set -e
-echo "📦 Đang cài đặt: $@"
-sudo apt-get update -qq
-sudo apt-get install -y --no-install-recommends "$@"
-sudo rm -rf /var/lib/apt/lists/*
-echo "✅ Đã cài xong: $@"
-EOF
-
-RUN cat > /usr/local/bin/install-pip << 'EOF'
-#!/bin/bash
-set -e
-echo "🐍 Đang cài Python package: $@"
-pip3 install --break-system-packages "$@"
-echo "✅ Đã cài xong: $@"
-EOF
-
-RUN cat > /usr/local/bin/install-npm << 'EOF'
-#!/bin/bash
-set -e
-echo "📦 Đang cài NPM package: $@"
-sudo npm install -g "$@"
-echo "✅ Đã cài xong: $@"
-EOF
-
-RUN sed -i 's/\r$//' /usr/local/bin/install-pkg /usr/local/bin/install-pip /usr/local/bin/install-npm \
-    && chmod +x /usr/local/bin/install-pkg /usr/local/bin/install-pip /usr/local/bin/install-npm
+COPY docker/install-pkg.sh /usr/local/bin/install-pkg
+COPY docker/install-pip.sh /usr/local/bin/install-pip
+COPY docker/install-npm.sh /usr/local/bin/install-npm
+RUN sed -i 's/\r$//' \
+        /usr/local/bin/install-pkg \
+        /usr/local/bin/install-pip \
+        /usr/local/bin/install-npm \
+    && chmod +x \
+        /usr/local/bin/install-pkg \
+        /usr/local/bin/install-pip \
+        /usr/local/bin/install-npm
 
 # ============================================================================
 # 7. ENTRYPOINT — 6-step OpenZalo install + restore repos + plugin seeding
