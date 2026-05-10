@@ -1,0 +1,18 @@
+chmod +x install.sh docker/entrypoint.sh
+
+# 1️⃣ Lần đầu — dọn disk cũ trước
+docker builder prune -af
+docker volume prune -f       # đã confirm 28GB volume mồ côi
+df -h                        # cần ≥20GB free
+
+# 2️⃣ Build full + up
+./install.sh
+
+# 2'. Hoặc build nhanh (lite, ~1.5GB texlive)
+./install.sh --lite
+
+# 3️⃣ Theo dõi
+docker compose logs -f openclaw-gateway
+
+# 4️⃣ Login Zalo (entrypoint đã tự cài plugin rồi)
+./install.sh --zalo --no-build
