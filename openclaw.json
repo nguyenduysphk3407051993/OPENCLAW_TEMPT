@@ -1,0 +1,775 @@
+{
+  "channels": {
+    "telegram": {
+      "execApprovals": {
+        "enabled": false,
+        "approvers": [
+          "7638885552"
+        ],
+        "target": "dm"
+      },
+      "enabled": true,
+      "dmPolicy": "allowlist",
+      "allowFrom": [
+        "7638885552"
+      ],
+      "groupPolicy": "allowlist",
+      "streaming": {
+        "mode": "off"
+      }
+    },
+    "discord": {
+      "enabled": true,
+      "token": "${DISCORD_TOKEN}",
+      "groupPolicy": "allowlist",
+      "streaming": {
+        "mode": "off"
+      },
+      "allowFrom": [
+        "1407787111549112432"
+      ],
+      "guilds": {
+        "1479328314140397620": {
+          "requireMention": false
+        }
+      },
+      "execApprovals": {
+        "enabled": true,
+        "approvers": [
+          "1407787111549112432"
+        ],
+        "cleanupAfterResolve": true,
+        "target": "dm"
+      }
+    },
+    "openzalo": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist",
+      "textChunkLimit": 2000,
+      "zcaBinary": "/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js",
+      "accounts": {
+        "default": {
+          "enabled": true,
+          "profile": "default",
+          "zcaBinary": "/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js"
+        }
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "moonshot": {
+        "baseUrl": "https://api.moonshot.ai/v1",
+        "api": "openai-completions",
+        "apiKey": "${KIMI_API_KEY}",
+        "models": [
+          {
+            "id": "kimi-k2.6",
+            "name": "Kimi K2.6",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 256000,
+            "maxTokens": 8192
+          },
+          {
+            "id": "kimi-k2.5",
+            "name": "Kimi K2.5",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 256000,
+            "maxTokens": 8192
+          }
+        ]
+      },
+      "claudible": {
+        "baseUrl": "https://claudible.io/v1",
+        "apiKey": "${CLAUDIBLE_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "claude-opus-4.7",
+            "name": "Claude Opus 4.7",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 16384
+          },
+          {
+            "id": "claude-sonnet-4.6",
+            "name": "Claude Sonnet 4.6",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 16384
+          },
+          {
+            "id": "claude-opus-4.6",
+            "name": "Claude Opus 4.6",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 16384
+          },
+          {
+            "id": "gpt-5.4",
+            "name": "GPT-5.4 (Claudible)",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          },
+          {
+            "id": "gpt-5.5",
+            "name": "GPT-5.5 (Claudible)",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          },
+          {
+            "id": "gpt-5.3-codex",
+            "name": "GPT-5.3 Codex (Claudible)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          }
+        ]
+      },
+      "bailian": {
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "apiKey": "${BAILIAN_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "qwen3.6-plus",
+            "name": "qwen3.6-plus",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 65536,
+            "compat": {
+              "thinkingFormat": "openai"
+            }
+          },
+          {
+            "id": "qwen3.5-plus",
+            "name": "qwen3.5-plus",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 65536,
+            "compat": {
+              "thinkingFormat": "openai"
+            }
+          },
+          {
+            "id": "MiniMax-M2.5",
+            "name": "MiniMax-M2.5",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 196608,
+            "maxTokens": 32768
+          },
+          {
+            "id": "glm-5",
+            "name": "glm-5",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 202752,
+            "maxTokens": 16384,
+            "compat": {
+              "thinkingFormat": "openai"
+            }
+          },
+          {
+            "id": "kimi-k2.5",
+            "name": "kimi-k2.5",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 262144,
+            "maxTokens": 32768,
+            "compat": {
+              "thinkingFormat": "openai"
+            }
+          }
+        ]
+      },
+      "9router": {
+        "baseUrl": "https://9router.edutechnd.io.vn/v1",
+        "apiKey": "${NINEROUTER_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "cx/gpt-5.5",
+            "name": "GPT-5.5 (9router)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          },
+          {
+            "id": "cx/gpt-5.4",
+            "name": "GPT-5.4 (9router)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          },
+          {
+            "id": "cx/gpt-5.3-codex",
+            "name": "GPT-5.3 Codex (9router)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          },
+          {
+            "id": "cx/gpt-5.3-codex-high",
+            "name": "GPT-5.3 Codex High (9router)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          },
+          {
+            "id": "cx/gpt-5.3-codex-xhigh",
+            "name": "GPT-5.3 Codex Xhigh (9router)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "lastTouchedVersion": "2026.5.7",
+    "lastTouchedAt": "2026-05-09T23:56:48.474Z"
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "controlUi": {
+      "enabled": true,
+      "dangerouslyAllowHostHeaderOriginFallback": true,
+      "allowInsecureAuth": true,
+      "dangerouslyDisableDeviceAuth": true
+    },
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    },
+    "trustedProxies": [
+      "0.0.0.0/0"
+    ],
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "bailian/qwen3.6-plus",
+        "fallbacks": [
+          "openai-codex/gpt-5.5",
+          "moonshot/kimi-k2.6"
+        ]
+      },
+      "models": {
+        "moonshot/kimi-k2.6": {
+          "alias": "Kimi"
+        },
+        "moonshot/kimi-k2.5": {
+          "alias": "Kimi"
+        },
+        "openai-codex/gpt-5.5": {},
+        "openai-codex/gpt-5.4": {},
+        "openai-codex/gpt-5.3-codex": {},
+        "claudible/claude-sonnet-4.6": {},
+        "claudible/claude-opus-4.7": {},
+        "claudible/claude-opus-4.6": {},
+        "claudible/gpt-5.5": {},
+        "claudible/gpt-5.4": {},
+        "claudible/gpt-5.3-codex": {},
+        "9router/cx/gpt-5.5": {
+          "alias": "gpt-5.5 - 9router"
+        },
+        "9router/cx/gpt-5.4": {
+          "alias": "gpt-5.4 - 9router"
+        },
+        "9router/cx/gpt-5.3-codex-xhigh": {
+          "alias": "gpt-5.3-codex-xhigh - 9router"
+        },
+        "9router/cx/gpt-5.3-codex-high": {
+          "alias": "gpt-5.3-codex-high - 9router"
+        },
+        "9router/cx/gpt-5.3-codex": {
+          "alias": "gpt-5.3-codex - 9router"
+        },
+        "bailian/qwen3.6-plus": {
+          "alias": "qwen3.6-plus"
+        },
+        "bailian/qwen3.5-plus": {
+          "alias": "qwen3.5-plus"
+        },
+        "bailian/glm-5": {
+          "alias": "glm-5"
+        },
+        "bailian/kimi-k2.5": {
+          "alias": "kimi-k2.5"
+        },
+        "bailian/MiniMax-M2.5": {
+          "alias": "minimax-m2.5"
+        }
+      },
+      "workspace": "/home/node/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "sandbox": {
+        "browser": {
+          "enabled": true
+        }
+      },
+      "bootstrapMaxChars": 30000,
+      "bootstrapTotalMaxChars": 300000
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true,
+        "workspace": "/home/node/.openclaw/workspace",
+        "model": {
+          "primary": "bailian/qwen3.6-plus",
+          "fallbacks": [
+            "moonshot/kimi-k2.6"
+          ]
+        },
+        "identity": {
+          "name": "ELLY TIỂU MY",
+          "emoji": "✨"
+        },
+        "subagents": {
+          "allowAgents": [
+            "latex-edutechnd",
+            "crawl-edutechnd",
+            "coder-edutechnd",
+            "english-edutechnd",
+            "office-edutechnd",
+            "prompt-edutechnd"
+          ]
+        },
+        "tools": {
+          "profile": "full"
+        }
+      },
+      {
+        "id": "latex-edutechnd",
+        "workspace": "/home/node/.openclaw/workspace/latex-edutechnd",
+        "model": {
+          "primary": "bailian/qwen3.6-plus",
+          "fallbacks": [
+            "moonshot/kimi-k2.6"
+          ]
+        },
+        "skills": [
+          "exam-latex-creator"
+        ],
+        "identity": {
+          "name": "LATEX_MASTER",
+          "emoji": "📐"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
+      },
+      {
+        "id": "crawl-edutechnd",
+        "workspace": "/home/node/.openclaw/workspace/crawl-edutechnd",
+        "model": {
+          "primary": "bailian/qwen3.6-plus",
+          "fallbacks": [
+            "moonshot/kimi-k2.6"
+          ]
+        },
+        "identity": {
+          "name": "CRAWLER",
+          "emoji": "🕸️"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
+      },
+      {
+        "id": "coder-edutechnd",
+        "workspace": "/home/node/.openclaw/workspace/coder-edutechnd",
+        "model": {
+          "primary": "bailian/qwen3.6-plus",
+          "fallbacks": [
+            "moonshot/kimi-k2.6"
+          ]
+        },
+        "identity": {
+          "name": "CODER",
+          "emoji": "💻"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
+      },
+      {
+        "id": "english-edutechnd",
+        "workspace": "/home/node/.openclaw/workspace/english-edutechnd",
+        "model": {
+          "primary": "bailian/qwen3.6-plus",
+          "fallbacks": [
+            "moonshot/kimi-k2.6"
+          ]
+        },
+        "identity": {
+          "name": "TEACHER_ENG",
+          "emoji": "🇬🇧"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
+      },
+      {
+        "id": "office-edutechnd",
+        "workspace": "/home/node/.openclaw/workspace/office-edutechnd",
+        "model": {
+          "primary": "bailian/qwen3.6-plus",
+          "fallbacks": [
+            "moonshot/kimi-k2.6"
+          ]
+        },
+        "skills": [
+          "gdrive-openclaw-uploader"
+        ],
+        "identity": {
+          "name": "SECRETARY",
+          "emoji": "📋"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
+      },
+      {
+        "id": "prompt-edutechnd",
+        "workspace": "/home/node/.openclaw/workspace/prompt-edutechnd",
+        "model": {
+          "primary": "openai-codex/gpt-5.5",
+          "fallbacks": [
+            "bailian/kimi-k2.5"
+          ]
+        },
+        "skills": [
+          "prompt-image-creator",
+          "prompt-video-creator"
+        ],
+        "identity": {
+          "name": "ART_DIRECTOR",
+          "emoji": "🎨"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "agentId": "main",
+      "match": {
+        "channel": "telegram"
+      }
+    },
+    {
+      "agentId": "main",
+      "match": {
+        "channel": "discord"
+      }
+    },
+    {
+      "agentId": "main",
+      "match": {
+        "channel": "openzalo"
+      }
+    }
+  ],
+  "tools": {
+    "profile": "coding",
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "kimi"
+      }
+    },
+    "sessions": {
+      "visibility": "all"
+    },
+    "elevated": {
+      "enabled": true,
+      "allowFrom": {
+        "telegram": [
+          "7638885552"
+        ],
+        "webchat": [
+          "openclaw-control-ui",
+          "*"
+        ]
+      }
+    },
+    "exec": {
+      "security": "full",
+      "ask": "off"
+    },
+    "alsoAllow": [
+      "browser"
+    ]
+  },
+  "plugins": {
+    "allow": [
+      "telegram",
+      "moonshot",
+      "openai",
+      "discord",
+      "browser",
+      "openzalo",
+      "memory-core"
+    ],
+    "entries": {
+      "telegram": {
+        "enabled": true
+      },
+      "openzalo": {
+        "enabled": true
+      },
+      "discord": {
+        "enabled": true
+      },
+      "moonshot": {
+        "enabled": true,
+        "config": {
+          "webSearch": {
+            "apiKey": "${KIMI_API_KEY}"
+          }
+        }
+      },
+      "openai": {
+        "enabled": true
+      },
+      "browser": {
+        "enabled": true
+      }
+    }
+  },
+  "env": {
+    "PATH": "/home/node/.local/bin:/home/node/bin:/home/node/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "OPENZCA_BINARY": "/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js"
+  },
+  "commands": {
+    "ownerAllowFrom": [
+      "openzalo:5853926754769804560"
+    ]
+  }
+}

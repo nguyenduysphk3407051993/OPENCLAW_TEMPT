@@ -1,3 +1,25 @@
-﻿.env_edutechnd_io_vn
+# Environment files - chứa API keys và secrets, KHÔNG push lên GitHub
+.env
+.env.*
 *.env
-.env*
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build output
+dist/
+build/

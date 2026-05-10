@@ -1,0 +1,50 @@
+docker compose down
+
+docker rmi openclaw-custom:2026.4.25 -f
+
+docker builder prune -a -f
+
+docker system prune -f
+
+docker compose build --no-cache && docker compose up -d
+
+docker compose restart openclaw-gateway
+
+docker compose logs -f --tail=100 openclaw-gateway
+
+mkdir -p ./data/gh-config ./data/whisper-cache
+
+sudo chown -R 1000:1000 ./data/gh-config ./data/whisper-cache
+
+### FIX LỖI disconnect 1008 pairing requiment
+docker exec -it openclaw-gateway gosu openclaw node /app/dist/index.js devices list
+
+docker exec -it openclaw-gateway openclaw devices approve 87b597b2-800d-4b50-9759-40bbb333df67
+
+#Lệnh vào container
+docker compose exec -u root openclaw-gateway bash
+
+#Cấu hình Openclaw
+
+docker compose --profile cli run --rm --entrypoint node openclaw-cli /app/dist/index.js doctor --fix
+
+docker compose --profile cli run --rm openclaw-cli node /app/dist/index.js onboard
+
+docker exec -it openclaw-gateway openclaw onboard
+
+
+## Đăng nhập Zalo===========
+
+# === BƯỚC 1: Login Zalo ===
+docker exec -it openclaw-gateway \
+  gosu openclaw node /app/dist/index.js channels login --channel openzalo
+
+# === BƯỚC 2: Quét QR trên Zalo ===
+scp -P 5088 root@194.233.81.179:/home/OPENCLAW/data/openclaw/workspace/qr.png C:/Users/duynt/Desktop/qr.png
+
+
+# === BƯỚC 3: Approve ===
+docker exec -it openclaw-gateway \
+  gosu openclaw node /app/dist/index.js pairing approve openzalo <MÃ_PAIRING>
+
+# === XONG! ===

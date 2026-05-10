@@ -1,63 +1,7 @@
-# =============================================================================
-# OpenClaw SV-Pro stack
-#  - Build từ Dockerfile (image: openclaw-pro:latest)
-#  - Network: traefik-net (external)
-#  - Volumes: persist toàn bộ data, plugin, extensions, npm/pip cache
-#  - User trong container: openclaw uid 1000 (KHÔNG còn `node`)
-# =============================================================================
-
-x-openclaw-volumes: &openclaw-volumes
-  # ---- core state ----
-  - ${OPENCLAW_DATA_DIR:-./data/openclaw}:/home/openclaw/.openclaw
-  - ${WORKSPACE_DIR:-./data/workspace}:/home/openclaw/.openclaw/workspace
-  - ${SKILLS_DIR:-./data/skills}:/home/openclaw/.openclaw/skills
-  - ${EXTENSIONS_DIR:-./data/extensions}:/home/openclaw/.openclaw/extensions
-  - ${LOGS_DIR:-./data/logs}:/home/openclaw/.openclaw/logs
-  # ---- channel session ----
-  - ${ZALO_DATA_DIR:-./data/zalo}:/home/openclaw/.openzca
-  # ---- hermes ----
-  - ${HERMES_DATA_DIR:-./data/hermes}:/home/openclaw/.hermes
-  # ---- caches: tránh tải lại sau down/up ----
-  - ${NPM_CACHE_DIR:-./data/cache/npm}:/home/openclaw/.npm
-  - ${NPM_GLOBAL_DIR:-./data/cache/npm-global}:/home/openclaw/.npm-global
-  - ${PIP_CACHE_DIR:-./data/cache/pip}:/home/openclaw/.cache/pip
-  - ${HF_CACHE_DIR:-./data/cache/huggingface}:/home/openclaw/.cache/huggingface
-  - ${REMBG_CACHE_DIR:-./data/cache/rembg}:/home/openclaw/.u2net
-  - ${PLAYWRIGHT_CACHE_DIR:-./data/cache/playwright}:/home/openclaw/.cache/ms-playwright
-  # ---- AI CLI tokens ----
-  - ${GEMINI_DATA_DIR:-./data/gemini}:/home/openclaw/.gemini
-  - ${GWS_DATA_DIR:-./data/gws}:/home/openclaw/.config/gws
-  - ${CLAUDE_DATA_DIR:-./data/claude}:/home/openclaw/.claude
-  # ---- user workspace bonus ----
-  - ${DOWNLOADS_DIR:-./data/downloads}:/home/openclaw/downloads
-  - ${PROJECTS_DIR:-./data/projects}:/home/openclaw/projects
-  # ---- system ----
-  - /etc/localtime:/etc/localtime:ro
-
-x-openclaw-environment: &openclaw-environment
-  NODE_ENV: production
-  TZ: ${TZ:-Asia/Ho_Chi_Minh}
-  HOME: /home/openclaw
-  OPENCLAW_STATE_DIR: /home/openclaw/.openclaw
-  OPENCLAW_CONFIG_DIR: /home/openclaw/.openclaw
-  OPENCLAW_WORKSPACE_DIR: /home/openclaw/.openclaw/workspace
-  OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
-  DB_HOST: postgres
-  DB_PORT: 5432
-  DB_USER: ${DB_USER:-openclaw}
-  DB_PASS: ${DB_PASS:-securepassword}
-  DB_NAME: ${DB_NAME:-openclaw_memory}
-  MEMORY_TYPE: postgres
-  MEMORY_BACKEND: postgres
-  VECTOR_STORE: pgvector
-  EMBEDDING_PROVIDER: openai
-  OPENAI_API_KEY: ${OPENAI_API_KEY}
-
 services:
-
-  # =====================================================================
+  # ==========================================
   # PostgreSQL + pgvector
-  # =====================================================================
+  # ==========================================
   postgres:
     image: pgvector/pgvector:pg16
     container_name: openclaw-postgres
@@ -71,21 +15,19 @@ services:
     networks:
       - traefik-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-openclaw} -d ${DB_NAME:-openclaw_memory}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-openclaw} -d ${DB_NAME:-openclaw_memory}" ]
       interval: 5s
       timeout: 5s
       retries: 10
 
-  # =====================================================================
-  # OpenClaw Gateway (custom image SV-Pro)
-  # =====================================================================
+  # ==========================================
+  # OpenClaw Gateway
+  # ==========================================
   openclaw-gateway:
-    image: openclaw-pro:latest
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        TEXLIVE_VARIANT: ${TEXLIVE_VARIANT:-full}    # full | lite
+      dockerfile: docker/Dockerfile  
+    image: openclaw:latest
     container_name: openclaw-gateway
     restart: unless-stopped
     depends_on:
@@ -93,32 +35,35 @@ services:
         condition: service_healthy
     expose:
       - "18789"
-    volumes: *openclaw-volumes
+    volumes:
+      - ${OPENCLAW_DATA_DIR:-./data/openclaw}:/home/openclaw/.openclaw
+      - ${OPENCLAW_OPENZCA_DIR:-./data/openzca}:/home/openclaw/.openzca
+      - ${OPENCLAW_DOWNLOADS_DIR:-./data/downloads}:/home/openclaw/downloads
     env_file: .env
     environment:
-      <<: *openclaw-environment
-      OPENCLAW_GATEWAY_MODE: local
-      GATEWAY_TRUSTED_PROXIES: 0.0.0.0/0
-      # Bypass plugin security scanner (cho phép openzalo dùng child_process)
-      OPENCLAW_ALLOW_UNCONFIGURED: "true"
-      OPENCLAW_PLUGINS_ALLOW_DANGEROUS: "1"
-      OPENCLAW_PLUGINS_TRUSTED: "openzalo,@tuyenhx/openzalo"
-      OPENCLAW_DISABLE_PLUGIN_AUDIT: "1"
-      # Doctor optimization
-      NODE_COMPILE_CACHE: /var/tmp/openclaw-compile-cache
-      OPENCLAW_NO_RESPAWN: "1"
-    # Cho phép sudo restart network/gateway từ trong container
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-      - SYS_PTRACE
-    # Override CMD: thêm --allow-unconfigured để không block khi config thiếu
-    command: ["gateway", "--bind", "lan", "--allow-unconfigured"]
+      - NODE_ENV=production
+      - OPENCLAW_GATEWAY_MODE=remote
+      - GATEWAY_TRUSTED_PROXIES=0.0.0.0/0
+      - OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
+      # --- Database ---
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-openclaw}
+      - DB_PASS=${DB_PASS:-securepassword}
+      - DB_NAME=${DB_NAME:-openclaw_memory}
+      # --- Memory & Vector ---
+      - MEMORY_TYPE=postgres
+      - MEMORY_BACKEND=postgres
+      - VECTOR_STORE=pgvector
+      - EMBEDDING_PROVIDER=openai
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # --- Config Plugins & Channels ---
+      - 'OPENCLAW_CHANNELS_OPENZALO_ALLOWFROM=["*"]'
+    command: [ "gateway", "--bind", "lan" ]
     networks:
       - traefik-net
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=traefik-net"
       - "traefik.http.routers.openclaw.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)"
       - "traefik.http.routers.openclaw.entrypoints=websecure"
       - "traefik.http.routers.openclaw.tls.certresolver=letsencrypt"
@@ -127,34 +72,42 @@ services:
       - "traefik.http.middlewares.openclaw-compress.compress=true"
       - "traefik.http.routers.openclaw.middlewares=openclaw-headers,openclaw-compress"
 
-  # =====================================================================
-  # OpenClaw CLI helper
-  # docker compose --profile cli run --rm openclaw-cli bash
-  # =====================================================================
+  # ==========================================
+  # OpenClaw CLI (dùng chung image đã build)
+  # ==========================================
   openclaw-cli:
-    image: openclaw-pro:latest
+    image: openclaw:latest
     container_name: openclaw-cli
     depends_on:
       postgres:
         condition: service_healthy
       openclaw-gateway:
         condition: service_started
-    volumes: *openclaw-volumes
+    volumes:
+      - ${OPENCLAW_DATA_DIR:-./data/openclaw}:/home/openclaw/.openclaw
+      - ${OPENCLAW_OPENZCA_DIR:-./data/openzca}:/home/openclaw/.openzca
+      - ${OPENCLAW_DOWNLOADS_DIR:-./data/downloads}:/home/openclaw/downloads
     env_file: .env
     environment:
-      <<: *openclaw-environment
-      OPENCLAW_ALLOW_UNCONFIGURED: "true"
-      OPENCLAW_ALLOW_INSECURE_PRIVATE_WS: "1"
-    cap_add:
-      - NET_ADMIN
-      - SYS_PTRACE
+      - NODE_ENV=production
+      - OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-openclaw}
+      - DB_PASS=${DB_PASS:-securepassword}
+      - DB_NAME=${DB_NAME:-openclaw_memory}
+      - MEMORY_TYPE=postgres
+      - MEMORY_BACKEND=postgres
+      - VECTOR_STORE=pgvector
+      - EMBEDDING_PROVIDER=openai
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENCLAW_ALLOW_UNCONFIGURED=true
+      - OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1
     networks:
       - traefik-net
-    profiles: [cli]
+    profiles: [ cli ]
     stdin_open: true
     tty: true
-    entrypoint: ["tini", "--", "/usr/local/bin/entrypoint.sh"]
-    command: ["bash"]
 
 networks:
   traefik-net:
