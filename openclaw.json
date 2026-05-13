@@ -46,12 +46,18 @@
       "enabled": true,
       "dmPolicy": "pairing",
       "groupPolicy": "allowlist",
+      "groupRequireMention": true,
+      "groupMentionOnly": true,
+      "stripMentionFromText": true,
       "textChunkLimit": 2000,
       "zcaBinary": "/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js",
       "accounts": {
         "default": {
           "enabled": true,
           "profile": "default",
+          "groupRequireMention": true,
+          "groupMentionOnly": true,
+          "stripMentionFromText": true,
           "zcaBinary": "/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js"
         }
       }
