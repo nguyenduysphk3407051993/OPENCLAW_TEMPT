@@ -162,14 +162,7 @@ RUN git clone --depth 1 https://github.com/jo-inc/camofox-browser.git /opt/camof
 RUN git clone --depth 1 https://github.com/unclecode/crawl4ai.git /opt/crawl4ai \
     && chown -R openclaw:openclaw /opt/crawl4ai
 
-# openzalo seed: giữ /opt/repos-seed chỉ cho entrypoint plugin install
-RUN mkdir -p /opt/repos-seed \
-    && git clone --depth 1 https://github.com/darkamenosa/openzalo.git /opt/repos-seed/openzalo \
-    && if [ -f /opt/repos-seed/openzalo/package.json ]; then \
-           npm install --prefix /opt/repos-seed/openzalo --no-audit --no-fund --ignore-scripts; \
-       fi \
-    && chown -R root:root /opt/repos-seed
-
+# openzalo seed: Không cần clone nữa, sẽ cài trực tiếp qua NPM (@tuyenhx/openzalo) lúc khởi động
 # ============================================
 # 4c. Fix PATH trong login shell
 # ============================================
@@ -470,44 +463,13 @@ if [ ! -f "$MARKER_OPENZALO" ]; then
         echo "[openzalo] ⚠️  openzca không tìm thấy"
     fi
 
-    echo "[openzalo] 📂 Chuẩn bị source tại $OPENZALO_TMP_DIR..."
-    rm -rf "$OPENZALO_TMP_DIR"
-    if [ -d "$SEED_OPENZALO" ] && [ "$(ls -A "$SEED_OPENZALO" 2>/dev/null)" ]; then
-        cp -a "$SEED_OPENZALO" "$OPENZALO_TMP_DIR"
-        echo "[openzalo] 📋 Restore từ seed"
-    else
-        git clone --depth 1 https://github.com/darkamenosa/openzalo.git "$OPENZALO_TMP_DIR" || \
-            echo "[openzalo] ❌ Git clone fail"
-        echo "[openzalo] 🌐 Cloned từ GitHub"
-    fi
-    chown -R openclaw:openclaw "$OPENZALO_TMP_DIR" 2>/dev/null || true
-
-    if [ -d "$OPENZALO_TMP_DIR" ] && [ ! -d "$OPENZALO_TMP_DIR/node_modules" ]; then
-        echo "[openzalo] 📥 npm install..."
-        ( cd "$OPENZALO_TMP_DIR" && $GOSU openclaw npm install --no-audit --no-fund ) || \
-            echo "[openzalo] ⚠️  npm install lỗi"
-    fi
-
-    if [ -d "$OPENZALO_TMP_DIR" ]; then
-        echo "[openzalo] 🔌 openclaw plugins install $OPENZALO_TMP_DIR..."
-        $GOSU openclaw $OPENCLAW_BIN plugins install "$OPENZALO_TMP_DIR" 2>&1 || \
-            echo "[openzalo] ⚠️  plugins install non-zero (verify tiếp)"
-    fi
-
-    if [ ! -f "$OPENZALO_EXT_DIR/openclaw.plugin.json" ]; then
-        echo "[openzalo] 🔧 Plugin chưa ở $OPENZALO_EXT_DIR — copy thủ công..."
-        mkdir -p "$EXT_DIR"
-        rm -rf "$OPENZALO_EXT_DIR"
-        cp -a "$OPENZALO_TMP_DIR" "$OPENZALO_EXT_DIR" 2>/dev/null || true
-        chown -R openclaw:openclaw "$OPENZALO_EXT_DIR" 2>/dev/null || true
-    fi
-
-    OPENZALO_OK=false
-    if [ -f "$OPENZALO_EXT_DIR/openclaw.plugin.json" ]; then
+    echo "[openzalo] 🔌 Cài đặt plugin từ NPM (@tuyenhx/openzalo)..."
+    if $GOSU openclaw $OPENCLAW_BIN plugins install @tuyenhx/openzalo 2>&1; then
         OPENZALO_OK=true
-        echo "[openzalo] ✅ Plugin verified: $OPENZALO_EXT_DIR/openclaw.plugin.json"
+        echo "[openzalo] ✅ Plugin cài đặt thành công"
     else
-        echo "[openzalo] ❌ openclaw.plugin.json KHÔNG có — KHÔNG thêm channel config"
+        OPENZALO_OK=false
+        echo "[openzalo] ❌ Cài đặt plugin thất bại — KHÔNG thêm channel config"
     fi
 
     if [ "$OPENZALO_OK" = "true" ]; then
@@ -559,13 +521,7 @@ PYEOF
         touch "$MARKER_OPENZALO"
         chown openclaw:openclaw "$MARKER_OPENZALO"
         echo "[openzalo] ✅ Hoàn tất! Bước thủ công còn lại:"
-        echo "[openzalo]    docker exec -it <container> openclaw channels login --channel openzalo"
-        echo "[openzalo]    → Quét QR (B4), rồi: openclaw pairing approve openzalo XXXXXXXX (B6)"
-    else
-        echo "[openzalo] ⚠️  Install fail — marker không tạo, lần sau retry"
     fi
-
-    rm -rf "$OPENZALO_TMP_DIR" 2>/dev/null || true
 else
     echo "[openzalo] ✅ Đã cài (marker tồn tại trên volume)"
 fi
