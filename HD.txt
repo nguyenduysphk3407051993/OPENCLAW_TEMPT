@@ -1,3 +1,20 @@
+
+# Bước 1: Clone repo vào thư mục tạm
+git clone https://github.com/nguyenduysphk3407051993/OPENCLAW_TEMPT.git /tmp/openclaw_temp
+
+# Bước 2: Copy toàn bộ nội dung vào thư mục hiện tại /home/OPENCLAW
+cp -r /tmp/openclaw_temp/. /home/OPENCLAW/
+
+# Bước 3: Xóa thư mục tạm
+rm -rf /tmp/openclaw_temp
+
+# Kiểm tra kết quả
+ls /home/OPENCLAW
+
+
+
+
+
 docker compose down
 
 docker rmi openclaw-custom:2026.4.25 -f

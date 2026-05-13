@@ -10,13 +10,13 @@ LABEL org.opencontainers.image.authors="OpenClaw Community" \
 # ============================================
 ENV NODE_ENV=production \
     PNPM_HOME="/pnpm" \
-    PATH="/home/openclaw/.npm-global/bin:/pnpm:/usr/local/bin:$PATH" \
+    PATH="/home/openclaw/.npm-global/bin:/home/node/.npm-global/bin:/pnpm:/usr/local/bin:$PATH" \
     TZ=Asia/Ho_Chi_Minh \
     NO_UPDATE_NOTIFIER=true \
     HOME=/home/openclaw \
     OPENCLAW_STATE_DIR=/home/openclaw/.openclaw \
     NPM_CONFIG_PREFIX=/home/openclaw/.npm-global \
-    OPENZCA_BINARY=/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js \
+    OPENZCA_BINARY=/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js \
     DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1
 
@@ -100,6 +100,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 3. Global NPM Tools
 # (Bun, pnpm, corepack đã có sẵn trong image official → bỏ phần đó)
 # ============================================
+# Cài các NPM tools cho user openclaw (acpx, gemini, codex, claude)
 RUN mkdir -p /home/openclaw/.npm-global /home/openclaw/.npm \
     && chown -R openclaw:openclaw /home/openclaw/.npm-global /home/openclaw/.npm \
     && gosu openclaw npm config set prefix /home/openclaw/.npm-global \
@@ -109,16 +110,19 @@ RUN mkdir -p /home/openclaw/.npm-global /home/openclaw/.npm \
         @google/gemini-cli \
         @openai/codex \
         @anthropic-ai/claude-code \
-        openzca \
-    && for bin in acpx gemini codex claude openzca; do \
+    && for bin in acpx gemini codex claude; do \
          ln -sf "/home/openclaw/.npm-global/bin/$bin" "/usr/local/bin/$bin" 2>/dev/null || true; \
        done \
-    && mkdir -p /home/node/.npm-global/lib/node_modules \
-    && if [ -d /home/openclaw/.npm-global/lib/node_modules/openzca ]; then \
-         ln -sfn /home/openclaw/.npm-global/lib/node_modules/openzca /home/node/.npm-global/lib/node_modules/openzca; \
-       fi \
-    && chown -R openclaw:openclaw /home/openclaw/.npm-global /home/openclaw/.npm /home/node \
-    && chmod -R u+rwX /home/openclaw/.npm-global /home/openclaw/.npm /home/node
+    && chown -R openclaw:openclaw /home/openclaw/.npm-global /home/openclaw/.npm
+
+# Cài openzca vào /home/node/.npm-global (đường dẫn plugin openzalo yêu cầu)
+RUN mkdir -p /home/node/.npm-global/lib /home/node/.npm-global/bin /home/node/.npm \
+    && chown -R openclaw:openclaw /home/node/.npm-global /home/node/.npm \
+    && gosu openclaw env HOME=/home/node NPM_CONFIG_PREFIX=/home/node/.npm-global \
+       npm install -g --prefix /home/node/.npm-global openzca \
+    && ln -sf "/home/node/.npm-global/bin/openzca" "/usr/local/bin/openzca" 2>/dev/null || true \
+    && chown -R openclaw:openclaw /home/node/.npm-global /home/node/.npm \
+    && chmod -R u+rwX /home/node/.npm-global /home/node/.npm
 
 # ============================================
 # 4. Python Tools: yt-dlp & Crawl4AI + Playwright
@@ -164,12 +168,12 @@ RUN mkdir -p /opt/neural-memory /opt/googleworkspace-cli /opt/camofox-browser /o
 # ============================================
 RUN printf '%s\n' \
     '# OpenClaw SV — giữ PATH đúng trong mọi login shell context' \
-    'export PATH="/home/openclaw/.npm-global/bin:/pnpm:/usr/local/bin:${PATH}"' \
+    'export PATH="/home/openclaw/.npm-global/bin:/home/node/.npm-global/bin:/pnpm:/usr/local/bin:${PATH}"' \
     'export PNPM_HOME="/pnpm"' \
     'export NODE_ENV=production' \
     'export OPENCLAW_STATE_DIR=/home/openclaw/.openclaw' \
     'export NPM_CONFIG_PREFIX=/home/openclaw/.npm-global' \
-    'export OPENZCA_BINARY=/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js' \
+    'export OPENZCA_BINARY=/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js' \
     'export HOME=/home/openclaw' \
     > /etc/profile.d/openclaw-path.sh \
     && sed -i 's/\r$//' /etc/profile.d/openclaw-path.sh \
@@ -281,16 +285,16 @@ chmod -R u+rwX /home/node 2>/dev/null || true
 # Đảm bảo .openclaw không bị set 700 (gây EACCES khi traverse)
 chmod 755 /home/openclaw/.openclaw 2>/dev/null || true
 
-# OpenZCA compatibility: force OpenZalo to use /home/openclaw, keep /home/node fallback writable
+# OpenZCA: dùng /home/node/.npm-global làm đường dẫn chính (plugin openzalo yêu cầu)
 export HOME=/home/openclaw
 export OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
 export NPM_CONFIG_PREFIX=/home/openclaw/.npm-global
-export OPENZCA_BINARY=/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js
+export OPENZCA_BINARY=/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js
 
-if [ -d /home/openclaw/.npm-global/lib/node_modules/openzca ]; then
-    mkdir -p /home/node/.npm-global/lib/node_modules
-    ln -sfn /home/openclaw/.npm-global/lib/node_modules/openzca /home/node/.npm-global/lib/node_modules/openzca 2>/dev/null || true
-fi
+# Đảm bảo /home/node/.npm-global/lib/node_modules/openzca tồn tại và writable
+mkdir -p /home/node/.npm-global/lib/node_modules
+chown -R openclaw:openclaw /home/node/.npm-global 2>/dev/null || true
+chmod -R u+rwX /home/node/.npm-global 2>/dev/null || true
 # ============================================
 # HELPER: restore_repo — copy seed → /opt/<name>
 # ============================================
@@ -499,7 +503,7 @@ if [ ! -f "$MARKER_OPENZALO" ]; then
         $GOSU openclaw python3 - "$CONFIG_FILE" << 'PYEOF'
 import json, sys
 config_file = sys.argv[1]
-ZCA_BINARY = '/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js'
+ZCA_BINARY = '/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js'
 
 try:
     with open(config_file, 'r', encoding='utf-8') as f:
@@ -512,31 +516,28 @@ channels = config.setdefault('channels', {})
 openzalo = channels.setdefault('openzalo', {})
 
 openzalo['enabled'] = True
-openzalo['profile'] = openzalo.get('profile', 'default')
-openzalo['zcaBinary'] = ZCA_BINARY
 openzalo['dmPolicy'] = openzalo.get('dmPolicy', 'pairing')
 openzalo['groupPolicy'] = openzalo.get('groupPolicy', 'allowlist')
-openzalo['groupRequireMention'] = openzalo.get('groupRequireMention', True)
-openzalo['sendFailureNotice'] = openzalo.get('sendFailureNotice', True)
+openzalo['groupRequireMention'] = True
+openzalo['groupMentionOnly'] = True
+openzalo['stripMentionFromText'] = True
 openzalo['textChunkLimit'] = openzalo.get('textChunkLimit', 2000)
+openzalo['zcaBinary'] = ZCA_BINARY
 
 accounts = openzalo.setdefault('accounts', {})
 default_account = accounts.setdefault('default', {})
 
 default_account['enabled'] = True
 default_account['profile'] = default_account.get('profile', 'default')
+default_account['groupRequireMention'] = True
+default_account['groupMentionOnly'] = True
+default_account['stripMentionFromText'] = True
 default_account['zcaBinary'] = ZCA_BINARY
-default_account['dmPolicy'] = default_account.get('dmPolicy', openzalo['dmPolicy'])
-default_account['groupPolicy'] = default_account.get('groupPolicy', openzalo['groupPolicy'])
-default_account['groupRequireMention'] = default_account.get(
-    'groupRequireMention',
-    openzalo['groupRequireMention']
-)
 
 with open(config_file, 'w', encoding='utf-8') as f:
     json.dump(config, f, indent=2, ensure_ascii=False)
 
-print('[python] Da cap nhat channels.openzalo profile/zcaBinary/accounts.default')
+print('[python] Da cap nhat channels.openzalo voi day du cac field moi')
 PYEOF
 
         touch "$MARKER_OPENZALO"
