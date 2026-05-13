@@ -50,7 +50,7 @@
       "groupMentionOnly": true,
       "stripMentionFromText": true,
       "textChunkLimit": 2000,
-      "zcaBinary": "/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js",
+      "zcaBinary": "/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js",
       "accounts": {
         "default": {
           "enabled": true,
@@ -58,7 +58,7 @@
           "groupRequireMention": true,
           "groupMentionOnly": true,
           "stripMentionFromText": true,
-          "zcaBinary": "/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js"
+          "zcaBinary": "/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js"
         }
       }
     }

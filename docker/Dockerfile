@@ -10,13 +10,13 @@ LABEL org.opencontainers.image.authors="OpenClaw Community" \
 # ============================================
 ENV NODE_ENV=production \
     PNPM_HOME="/pnpm" \
-    PATH="/home/openclaw/.npm-global/bin:/home/node/.npm-global/bin:/pnpm:/usr/local/bin:$PATH" \
+    PATH="/home/openclaw/.npm-global/bin:/pnpm:/usr/local/bin:$PATH" \
     TZ=Asia/Ho_Chi_Minh \
     NO_UPDATE_NOTIFIER=true \
     HOME=/home/openclaw \
     OPENCLAW_STATE_DIR=/home/openclaw/.openclaw \
     NPM_CONFIG_PREFIX=/home/openclaw/.npm-global \
-    OPENZCA_BINARY=/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js \
+    OPENZCA_BINARY=/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js \
     DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1
 
@@ -62,9 +62,9 @@ RUN set -e; \
     chown -R openclaw:openclaw /home/openclaw/.npm-global; \
     echo "prefix=/home/openclaw/.npm-global" > /home/openclaw/.npmrc; \
     chown openclaw:openclaw /home/openclaw/.npmrc; \
-    mkdir -p /home/node/.openclaw /home/node/.openzca /home/node/.npm-global; \
+    mkdir -p /home/node/.openclaw /home/node/.openzca /home/node/.npm-global/lib/node_modules; \
     chown -R openclaw:openclaw /home/node; \
-    chmod -R u+rwX /home/node; \	
+    chmod -R u+rwX /home/node; \
     echo "[user] ✅ User setup done:"; id openclaw
 
 # ============================================
@@ -100,7 +100,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 3. Global NPM Tools
 # (Bun, pnpm, corepack đã có sẵn trong image official → bỏ phần đó)
 # ============================================
-# Cài các NPM tools cho user openclaw (acpx, gemini, codex, claude)
+# Cài tất cả NPM tools cho user openclaw (bao gồm openzca)
 RUN mkdir -p /home/openclaw/.npm-global /home/openclaw/.npm \
     && chown -R openclaw:openclaw /home/openclaw/.npm-global /home/openclaw/.npm \
     && gosu openclaw npm config set prefix /home/openclaw/.npm-global \
@@ -110,19 +110,15 @@ RUN mkdir -p /home/openclaw/.npm-global /home/openclaw/.npm \
         @google/gemini-cli \
         @openai/codex \
         @anthropic-ai/claude-code \
-    && for bin in acpx gemini codex claude; do \
+        openzca \
+    && for bin in acpx gemini codex claude openzca; do \
          ln -sf "/home/openclaw/.npm-global/bin/$bin" "/usr/local/bin/$bin" 2>/dev/null || true; \
        done \
-    && chown -R openclaw:openclaw /home/openclaw/.npm-global /home/openclaw/.npm
-
-# Cài openzca vào /home/node/.npm-global (đường dẫn plugin openzalo yêu cầu)
-RUN mkdir -p /home/node/.npm-global/lib /home/node/.npm-global/bin /home/node/.npm \
-    && chown -R openclaw:openclaw /home/node/.npm-global /home/node/.npm \
-    && gosu openclaw env HOME=/home/node NPM_CONFIG_PREFIX=/home/node/.npm-global \
-       npm install -g --prefix /home/node/.npm-global openzca \
-    && ln -sf "/home/node/.npm-global/bin/openzca" "/usr/local/bin/openzca" 2>/dev/null || true \
-    && chown -R openclaw:openclaw /home/node/.npm-global /home/node/.npm \
-    && chmod -R u+rwX /home/node/.npm-global /home/node/.npm
+    && mkdir -p /home/node/.npm-global/lib/node_modules \
+    && ln -sfn /home/openclaw/.npm-global/lib/node_modules/openzca \
+           /home/node/.npm-global/lib/node_modules/openzca 2>/dev/null || true \
+    && chown -R openclaw:openclaw /home/openclaw/.npm-global /home/openclaw/.npm \
+    && chmod -R u+rwX /home/openclaw/.npm-global /home/openclaw/.npm
 
 # ============================================
 # 4. Python Tools: yt-dlp & Crawl4AI + Playwright
@@ -135,32 +131,43 @@ RUN pip3 install --no-cache-dir --break-system-packages \
     && rm -rf /tmp/playwright* /root/.cache/pip
 
 # ============================================
-# 4a. Clone repos vào /opt/repos-seed/ (baked vào image)
+# 4a. Clone repos + cài deps đầy đủ ngay khi build
+# Repos được clone thẳng /opt/<name> — sẵn sàng khi container start
 # ============================================
-RUN mkdir -p /opt/repos-seed
 
-RUN git clone --depth 1 https://github.com/nhadaututtheky/neural-memory.git /opt/repos-seed/neural-memory
+# neural-memory: chỉ cần markdown files
+RUN git clone --depth 1 https://github.com/nhadaututtheky/neural-memory.git /opt/neural-memory \
+    && chown -R openclaw:openclaw /opt/neural-memory
 
-RUN git clone --depth 1 https://github.com/googleworkspace/cli.git /opt/repos-seed/googleworkspace-cli \
-    && if [ -f /opt/repos-seed/googleworkspace-cli/package.json ]; then \
-           npm install --prefix /opt/repos-seed/googleworkspace-cli --ignore-scripts; \
-       fi
-
-RUN git clone --depth 1 https://github.com/jo-inc/camofox-browser.git /opt/repos-seed/camofox-browser \
-    && if [ -f /opt/repos-seed/camofox-browser/requirements.txt ]; then \
-           pip3 install --no-cache-dir --break-system-packages \
-               -r /opt/repos-seed/camofox-browser/requirements.txt; \
+# googleworkspace-cli: clone + npm install
+RUN git clone --depth 1 https://github.com/googleworkspace/cli.git /opt/googleworkspace-cli \
+    && if [ -f /opt/googleworkspace-cli/package.json ]; then \
+           npm install --prefix /opt/googleworkspace-cli --no-audit --no-fund --ignore-scripts; \
        fi \
-    && rm -rf /root/.cache/pip
+    && chown -R openclaw:openclaw /opt/googleworkspace-cli
 
-RUN git clone --depth 1 https://github.com/unclecode/crawl4ai.git /opt/repos-seed/crawl4ai
+# camofox-browser: clone + pip install requirements + editable install
+RUN git clone --depth 1 https://github.com/jo-inc/camofox-browser.git /opt/camofox-browser \
+    && if [ -f /opt/camofox-browser/requirements.txt ]; then \
+           pip3 install --no-cache-dir --break-system-packages \
+               -r /opt/camofox-browser/requirements.txt; \
+       fi \
+    && if [ -f /opt/camofox-browser/setup.py ] || [ -f /opt/camofox-browser/pyproject.toml ]; then \
+           pip3 install --no-cache-dir --break-system-packages -e /opt/camofox-browser; \
+       fi \
+    && rm -rf /root/.cache/pip \
+    && chown -R openclaw:openclaw /opt/camofox-browser
 
-RUN git clone --depth 1 https://github.com/darkamenosa/openzalo.git /opt/repos-seed/openzalo \
+# crawl4ai: clone source (pip package đã cài ở bước 4, ở đây lưu source để verify)
+RUN git clone --depth 1 https://github.com/unclecode/crawl4ai.git /opt/crawl4ai \
+    && chown -R openclaw:openclaw /opt/crawl4ai
+
+# openzalo seed: giữ /opt/repos-seed chỉ cho entrypoint plugin install
+RUN mkdir -p /opt/repos-seed \
+    && git clone --depth 1 https://github.com/darkamenosa/openzalo.git /opt/repos-seed/openzalo \
     && if [ -f /opt/repos-seed/openzalo/package.json ]; then \
            npm install --prefix /opt/repos-seed/openzalo --no-audit --no-fund --ignore-scripts; \
-       fi
-
-RUN mkdir -p /opt/neural-memory /opt/googleworkspace-cli /opt/camofox-browser /opt/crawl4ai \
+       fi \
     && chown -R root:root /opt/repos-seed
 
 # ============================================
@@ -168,12 +175,12 @@ RUN mkdir -p /opt/neural-memory /opt/googleworkspace-cli /opt/camofox-browser /o
 # ============================================
 RUN printf '%s\n' \
     '# OpenClaw SV — giữ PATH đúng trong mọi login shell context' \
-    'export PATH="/home/openclaw/.npm-global/bin:/home/node/.npm-global/bin:/pnpm:/usr/local/bin:${PATH}"' \
+    'export PATH="/home/openclaw/.npm-global/bin:/pnpm:/usr/local/bin:${PATH}"' \
     'export PNPM_HOME="/pnpm"' \
     'export NODE_ENV=production' \
     'export OPENCLAW_STATE_DIR=/home/openclaw/.openclaw' \
     'export NPM_CONFIG_PREFIX=/home/openclaw/.npm-global' \
-    'export OPENZCA_BINARY=/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js' \
+    'export OPENZCA_BINARY=/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js' \
     'export HOME=/home/openclaw' \
     > /etc/profile.d/openclaw-path.sh \
     && sed -i 's/\r$//' /etc/profile.d/openclaw-path.sh \
@@ -285,16 +292,20 @@ chmod -R u+rwX /home/node 2>/dev/null || true
 # Đảm bảo .openclaw không bị set 700 (gây EACCES khi traverse)
 chmod 755 /home/openclaw/.openclaw 2>/dev/null || true
 
-# OpenZCA: dùng /home/node/.npm-global làm đường dẫn chính (plugin openzalo yêu cầu)
+# Dùng user openclaw cho tất cả — openzca cài tại /home/openclaw/.npm-global
 export HOME=/home/openclaw
 export OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
 export NPM_CONFIG_PREFIX=/home/openclaw/.npm-global
-export OPENZCA_BINARY=/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js
+export OPENZCA_BINARY=/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js
 
-# Đảm bảo /home/node/.npm-global/lib/node_modules/openzca tồn tại và writable
+# Đảm bảo symlink /home/node/.npm-global/lib/node_modules/openzca vẫn hợp lệ
 mkdir -p /home/node/.npm-global/lib/node_modules
+if [ -d /home/openclaw/.npm-global/lib/node_modules/openzca ] && \
+   [ ! -e /home/node/.npm-global/lib/node_modules/openzca ]; then
+    ln -sfn /home/openclaw/.npm-global/lib/node_modules/openzca \
+        /home/node/.npm-global/lib/node_modules/openzca 2>/dev/null || true
+fi
 chown -R openclaw:openclaw /home/node/.npm-global 2>/dev/null || true
-chmod -R u+rwX /home/node/.npm-global 2>/dev/null || true
 # ============================================
 # HELPER: restore_repo — copy seed → /opt/<name>
 # ============================================
@@ -379,16 +390,21 @@ fi
 # ----- camofox-browser: pip install -e nếu có setup.py/pyproject -----
 MARKER_CAMOFOX="$MARKER_DIR/camofox-browser.done"
 if [ ! -f "$MARKER_CAMOFOX" ] && [ -d "/opt/camofox-browser" ]; then
-    echo "[setup] 🦊 camofox-browser: cài Python package..."
-    if [ -f "/opt/camofox-browser/requirements.txt" ]; then
-        pip3 install --no-cache-dir --break-system-packages \
-            -r /opt/camofox-browser/requirements.txt 2>&1 | tail -n 5 || \
-            echo "[setup]    ⚠️  requirements lỗi"
-    fi
-    if [ -f "/opt/camofox-browser/setup.py" ] || [ -f "/opt/camofox-browser/pyproject.toml" ]; then
-        pip3 install --no-cache-dir --break-system-packages \
-            -e /opt/camofox-browser 2>&1 | tail -n 3 || \
-            echo "[setup]    ⚠️  editable install lỗi"
+    echo "[setup] 🦊 camofox-browser: verify Python package..."
+    if python3 -c "import camofox" 2>/dev/null; then
+        echo "[setup] ✅ camofox-browser Python package OK (đã cài lúc build)"
+    else
+        echo "[setup]    🔧 Re-install camofox-browser..."
+        if [ -f "/opt/camofox-browser/requirements.txt" ]; then
+            pip3 install --no-cache-dir --break-system-packages \
+                -r /opt/camofox-browser/requirements.txt 2>&1 | tail -n 5 || \
+                echo "[setup]    ⚠️  requirements lỗi"
+        fi
+        if [ -f "/opt/camofox-browser/setup.py" ] || [ -f "/opt/camofox-browser/pyproject.toml" ]; then
+            pip3 install --no-cache-dir --break-system-packages \
+                -e /opt/camofox-browser 2>&1 | tail -n 3 || \
+                echo "[setup]    ⚠️  editable install lỗi"
+        fi
     fi
     touch "$MARKER_CAMOFOX"
     chown openclaw:openclaw "$MARKER_CAMOFOX"
@@ -503,7 +519,7 @@ if [ ! -f "$MARKER_OPENZALO" ]; then
         $GOSU openclaw python3 - "$CONFIG_FILE" << 'PYEOF'
 import json, sys
 config_file = sys.argv[1]
-ZCA_BINARY = '/home/node/.npm-global/lib/node_modules/openzca/dist/cli.js'
+ZCA_BINARY = '/home/openclaw/.npm-global/lib/node_modules/openzca/dist/cli.js'
 
 try:
     with open(config_file, 'r', encoding='utf-8') as f:
