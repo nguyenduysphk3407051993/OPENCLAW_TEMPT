@@ -126,7 +126,7 @@ RUN mkdir -p /home/openclaw/.npm-global /home/openclaw/.npm \
 RUN pip3 install --no-cache-dir --break-system-packages \
     yt-dlp \
     git+https://github.com/unclecode/crawl4ai.git \
-    && python3 -m playwright install-deps chromium \
+    && python3 -m playwright install-deps \
     && python3 -m playwright install chromium \
     && rm -rf /tmp/playwright* /root/.cache/pip
 
