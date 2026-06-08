@@ -614,7 +614,7 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
   "agents": {
     "defaults": {
       "model": {
-        "primary": "openai/gpt-5.5",
+        "primary": "9router/cx/gpt-5.4",
         "fallbacks": [ "9router/openclaw-edutechnd-org" ]
       },
       "models": {
@@ -656,10 +656,9 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
         "default": true,
         "workspace": "/home/node/.openclaw/workspace",
         "model": {
-          "primary": "openai/gpt-5.5",
-          "fallbacks": [ "bailian/qwen3.6-plus", "9router/openclaw-edutechnd-org" ]
+          "primary": "9router/cx/gpt-5.4",
+          "fallbacks": [ "9router/openclaw-edutechnd-org" ]
         },
-        "models": { "openai/gpt-5.5": { "agentRuntime": { "id": "codex" } } },
         "skills": [
           "supertonic-tts",
           "codex-imagen",
@@ -686,7 +685,7 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
       {
         "id": "latex-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/latex-edutechnd",
-        "model": { "primary": "openai/gpt-5.5", "fallbacks": [ "bailian/qwen3.6-plus", "9router/openclaw-edutechnd-org" ] },
+        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
         "models": { "openai/gpt-5.5": { "agentRuntime": { "id": "codex" } } },
         "skills": [ "exam-latex-creator" ],
         "identity": { "name": "LATEX_MASTER", "emoji": "📐" },
@@ -697,8 +696,7 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
       {
         "id": "coder-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/coder-edutechnd",
-        "model": { "primary": "openai/gpt-5.5", "fallbacks": [ "bailian/qwen3.6-plus", "9router/openclaw-edutechnd-org" ] },
-        "models": { "openai/gpt-5.5": { "agentRuntime": { "id": "codex" } } },
+        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
         "skills": [ "oop-pyqt6-apps", "manim-learning-roadmap" ],
         "identity": { "name": "CODER", "emoji": "💻" },
         "instructions": "Bạn là Lập trình viên Senior. Bạn chỉ tập trung viết code, debug, tạo script và ứng dụng phần mềm. Hãy viết code tối ưu, chia nhỏ component, có comment rõ ràng. Chỉ giải thích kỹ thuật khi thực sự cần thiết.",
@@ -708,8 +706,7 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
       {
         "id": "english-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/english-edutechnd",
-        "model": { "primary": "openai/gpt-5.4", "fallbacks": [ "bailian/qwen3.6-plus", "9router/openclaw-edutechnd-org" ] },
-        "models": { "openai/gpt-5.4": { "agentRuntime": { "id": "codex" } } },
+        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
         "identity": { "name": "TEACHER_ENG", "emoji": "🇬🇧" },
         "instructions": "Bạn là giáo viên tiếng Anh xuất sắc. Chuyên môn của bạn là dịch thuật chuẩn ngữ cảnh, sửa lỗi ngữ pháp, và giải thích từ vựng tiếng Anh. Luôn bám sát task và cung cấp ví dụ thực tiễn dễ hiểu.",
         "subagents": { "allowAgents": [] },
@@ -718,8 +715,7 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
       {
         "id": "office-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/office-edutechnd",
-        "model": { "primary": "openai/gpt-5.5", "fallbacks": [ "bailian/qwen3.6-plus", "9router/openclaw-edutechnd-org" ] },
-        "models": { "openai/gpt-5.5": { "agentRuntime": { "id": "codex" } } },
+        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
         "skills": [ "gdrive-openclaw-uploader" ],
         "identity": { "name": "SECRETARY", "emoji": "📋" },
         "instructions": "Bạn là thư ký hành chính thông minh. Nhiệm vụ của bạn là sắp xếp, xử lý văn bản, tài liệu, và thao tác với Google Drive/Cloud. Luôn làm việc cẩn thận, chính xác và báo cáo lại kết quả/đường dẫn rõ ràng.",
@@ -729,8 +725,7 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
       {
         "id": "prompt-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/prompt-edutechnd",
-        "model": { "primary": "openai/gpt-5.4", "fallbacks": [ "bailian/qwen3.6-plus", "9router/openclaw-edutechnd-org" ] },
-        "models": { "openai/gpt-5.4": { "agentRuntime": { "id": "codex" } } },
+        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
         "skills": [ "prompt-image-creator", "prompt-video-creator", "codex-imagen", "supertonic-tts" ],
         "identity": { "name": "ART_DIRECTOR", "emoji": "🎨" },
         "instructions": "Bạn là Giám đốc Nghệ thuật (Art Director). Chuyên môn của bạn là phân tích yêu cầu sáng tạo, viết prompt cực kỳ tối ưu cho AI tạo ảnh/video/âm thanh, sau đó gọi tool thiết kế. Đặt tính thẩm mỹ và mô tả cụ thể lên hàng đầu.",
