@@ -1,0 +1,41 @@
+========================================================================
+HƯỚNG DẪN CÀI ĐẶT OPENCLAW SIÊU TỐC TỪ CON SỐ 0 (KHÔNG BỊ LỖI MÔI TRƯỜNG)
+========================================================================
+
+Bước 1: Tải mã nguồn mới nhất từ Github
+--------------------------------------------------
+Nếu cài mới hoàn toàn, hãy chạy lệnh clone:
+    git clone git@github.com:nguyenduysphk3407051993/OPENCLAW_TEMPT.git
+    cd OPENCLAW_TEMPT
+
+(Nếu thư mục đã có sẵn mã nguồn, chỉ cần chạy: git pull origin main)
+
+Bước 2: Tận dụng file môi trường có sẵn
+--------------------------------------------------
+Hệ thống đã có sẵn file `.env.edutechnd.org` chứa toàn bộ API Key và Token của bạn.
+Sao chép nội dung file này sang file `secrets.env` để script khởi tạo có thể đọc được:
+    cp .env.edutechnd.org secrets.env
+
+Bước 3: Chạy script khởi tạo hệ thống
+--------------------------------------------------
+Vì file `secrets.env` đã được chuẩn bị đầy đủ, bạn chỉ cần cấp quyền và chạy script 1 lần duy nhất.
+Script sẽ tự động sinh ra docker-compose.yml, Dockerfile và các cấu hình liên quan:
+    chmod +x init.sh
+    bash init.sh
+
+Bước 4: Build và khởi động Docker
+--------------------------------------------------
+Sử dụng tham số `--no-cache` để đảm bảo hệ thống build sạch 100%, không bị dính cache cũ:
+    docker compose build --no-cache
+    docker compose up -d
+
+Bước 5: Kiểm tra trạng thái hoạt động
+--------------------------------------------------
+Chờ khoảng 10-15 giây để Database (Postgres) khởi động. Xem log để xác nhận bot đã đăng nhập thành công vào Telegram/Zalo/Discord:
+    docker compose logs -f openclaw-gateway
+
+(Bấm Ctrl + C để thoát khỏi chế độ xem log)
+
+========================================================================
+CHÚC BẠN TRIỂN KHAI THÀNH CÔNG!
+========================================================================
