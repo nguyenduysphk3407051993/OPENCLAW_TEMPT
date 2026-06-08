@@ -8,8 +8,18 @@ Bước 1: Tải mã nguồn mới nhất từ Github
     git clone https://github.com/nguyenduysphk3407051993/OPENCLAW_TEMPT.git
 
 [Cách 2 - Bảo mật cao] Sử dụng giao thức SSH:
-    git clone git@github.com:nguyenduysphk3407051993/OPENCLAW_TEMPT.git
-    *Lưu ý khi dùng Cách 2: VPS của bạn BẮT BUỘC phải sinh sẵn SSH Key (bằng lệnh ssh-keygen) và đã copy nội dung file Public Key (thường là ~/.ssh/id_rsa.pub) dán vào mục "SSH and GPG keys" trên trang cài đặt tài khoản Github của bạn. Nếu chưa làm bước này, git clone sẽ báo lỗi "Permission Denied".
+    Nếu bạn muốn dùng SSH, bạn phải thiết lập khóa bảo mật trên VPS theo các bước sau:
+    a. Tạo khóa SSH mới (nếu VPS chưa có):
+       Chạy lệnh: ssh-keygen -t rsa -b 4096 -C "email_cua_ban@gmail.com"
+       (Ấn Enter liên tục 3 lần để bỏ qua các tùy chọn phụ, không cần nhập mật khẩu)
+    b. Xem và Copy đoạn mã Public Key vừa tạo:
+       Chạy lệnh: cat ~/.ssh/id_rsa.pub
+       (Bôi đen và Copy toàn bộ đoạn text hiện ra, bắt đầu bằng chữ "ssh-rsa...")
+    c. Khai báo khóa với Github:
+       Truy cập Github.com -> Settings -> SSH and GPG keys -> Bấm "New SSH key".
+       Dán đoạn mã vừa copy vào khung "Key" và lưu lại.
+    d. Tiến hành tải code trên VPS:
+       Chạy lệnh: git clone git@github.com:nguyenduysphk3407051993/OPENCLAW_TEMPT.git
 
 Sau khi tải xong mã nguồn, truy cập vào thư mục:
     cd OPENCLAW_TEMPT
