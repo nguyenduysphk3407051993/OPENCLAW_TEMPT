@@ -4,8 +4,14 @@ HƯỚNG DẪN CÀI ĐẶT OPENCLAW SIÊU TỐC TỪ CON SỐ 0 (KHÔNG BỊ L�
 
 Bước 1: Tải mã nguồn mới nhất từ Github
 --------------------------------------------------
-Nếu cài mới hoàn toàn, hãy chạy lệnh clone:
+[Cách 1 - Khuyên dùng] Sử dụng HTTPS (Nhanh gọn, không cần cài đặt SSH Key):
     git clone https://github.com/nguyenduysphk3407051993/OPENCLAW_TEMPT.git
+
+[Cách 2 - Bảo mật cao] Sử dụng giao thức SSH:
+    git clone git@github.com:nguyenduysphk3407051993/OPENCLAW_TEMPT.git
+    *Lưu ý khi dùng Cách 2: VPS của bạn BẮT BUỘC phải sinh sẵn SSH Key (bằng lệnh ssh-keygen) và đã copy nội dung file Public Key (thường là ~/.ssh/id_rsa.pub) dán vào mục "SSH and GPG keys" trên trang cài đặt tài khoản Github của bạn. Nếu chưa làm bước này, git clone sẽ báo lỗi "Permission Denied".
+
+Sau khi tải xong mã nguồn, truy cập vào thư mục:
     cd OPENCLAW_TEMPT
 
 (Nếu thư mục đã có sẵn mã nguồn, chỉ cần chạy: git pull origin main)
