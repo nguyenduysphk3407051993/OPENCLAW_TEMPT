@@ -5,7 +5,7 @@ HƯỚNG DẪN CÀI ĐẶT OPENCLAW SIÊU TỐC TỪ CON SỐ 0 (KHÔNG BỊ L�
 Bước 1: Tải mã nguồn mới nhất từ Github
 --------------------------------------------------
 Nếu cài mới hoàn toàn, hãy chạy lệnh clone:
-    git clone git@github.com:nguyenduysphk3407051993/OPENCLAW_TEMPT.git
+    git clone https://github.com/nguyenduysphk3407051993/OPENCLAW_TEMPT.git
     cd OPENCLAW_TEMPT
 
 (Nếu thư mục đã có sẵn mã nguồn, chỉ cần chạy: git pull origin main)
