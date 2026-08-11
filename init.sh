@@ -456,43 +456,56 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
     "telegram": {
       "execApprovals": {
         "enabled": true,
-        "approvers": [ 7638885552 ],
+        "approvers": [
+          7638885552
+        ],
         "target": "dm"
       },
       "enabled": true,
       "dmPolicy": "allowlist",
-      "allowFrom": [ 7638885552 ],
+      "allowFrom": [
+        7638885552
+      ],
       "groupPolicy": "allowlist",
-      "streaming": { "mode": "off" },
-      "groupAllowFrom": [ "7638885552" ]
+      "streaming": {
+        "mode": "off"
+      },
+      "groupAllowFrom": [
+        "7638885552"
+      ]
     },
     "discord": {
       "enabled": true,
       "token": "${DISCORD_TOKEN}",
       "groupPolicy": "allowlist",
-      "streaming": { "mode": "off" },
-      "allowFrom": [ "1407787111549112432" ],
+      "streaming": {
+        "mode": "off"
+      },
+      "allowFrom": [
+        "1407787111549112432"
+      ],
       "guilds": {
-        "1479328314140397620": { "requireMention": false }
+        "1479328314140397620": {
+          "requireMention": false
+        }
       },
       "execApprovals": {
         "enabled": true,
-        "approvers": [ "1407787111549112432" ],
+        "approvers": [
+          "1407787111549112432"
+        ],
         "cleanupAfterResolve": true,
         "target": "dm"
       }
     },
     "openzalo": {
       "enabled": true,
-      "execApprovals": {
-        "enabled": true,
-        "approvers": [ "5853926754769804560" ],
-        "target": "dm"
-      },
       "profile": "default",
       "dmPolicy": "allowlist",
       "groupPolicy": "allowlist",
-      "groupAllowFrom": [ "79569144045955639" ],
+      "groupAllowFrom": [
+        "79569144045955639"
+      ],
       "textChunkLimit": 2000,
       "zcaBinary": "openzca",
       "accounts": {
@@ -514,7 +527,9 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
         "850216080918230753"
       ],
       "groups": {
-        "79569144045955639": { "requireMention": true }
+        "79569144045955639": {
+          "requireMention": true
+        }
       },
       "actions": {
         "messages": true,
@@ -532,47 +547,49 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
   "models": {
     "mode": "merge",
     "providers": {
-      "moonshot": {
-        "baseUrl": "https://api.moonshot.ai/v1",
-        "api": "openai-completions",
-        "apiKey": "${KIMI_API_KEY}",
-        "models": [
-          { "id": "kimi-k2.6", "name": "Kimi K2.6", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 256000, "maxTokens": 8192 },
-          { "id": "kimi-k2.5", "name": "Kimi K2.5", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 256000, "maxTokens": 8192 }
-        ]
-      },
-      "claudible": {
-        "baseUrl": "https://claudible.io/v1",
-        "apiKey": "${CLAUDIBLE_API_KEY}",
-        "api": "openai-completions",
-        "models": [
-          { "id": "claude-opus-4.7", "name": "Claude Opus 4.7", "api": "openai-completions", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 200000, "maxTokens": 16384 },
-          { "id": "claude-sonnet-4.6", "name": "Claude Sonnet 4.6", "api": "openai-completions", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 200000, "maxTokens": 16384 },
-          { "id": "claude-opus-4.6", "name": "Claude Opus 4.6", "api": "openai-completions", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 200000, "maxTokens": 16384 },
-          { "id": "gpt-5.4", "name": "GPT-5.4 (Claudible)", "api": "openai-completions", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1048576, "maxTokens": 65536 },
-          { "id": "gpt-5.5", "name": "GPT-5.5 (Claudible)", "api": "openai-completions", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1048576, "maxTokens": 65536 },
-          { "id": "gpt-5.3-codex", "name": "GPT-5.3 Codex (Claudible)", "api": "openai-completions", "reasoning": true, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1048576, "maxTokens": 65536 }
-        ]
-      },
-      "bailian": {
-        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
-        "apiKey": "${BAILIAN_API_KEY}",
-        "api": "openai-completions",
-        "models": [
-          { "id": "qwen3.6-plus", "name": "qwen3.6-plus", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1000000, "maxTokens": 65536, "compat": { "thinkingFormat": "openai" } },
-          { "id": "qwen3.5-plus", "name": "qwen3.5-plus", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1000000, "maxTokens": 65536, "compat": { "thinkingFormat": "openai" } },
-          { "id": "MiniMax-M2.5", "name": "MiniMax-M2.5", "reasoning": false, "input": ["text"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 196608, "maxTokens": 32768 },
-          { "id": "glm-5", "name": "glm-5", "reasoning": false, "input": ["text"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 202752, "maxTokens": 16384, "compat": { "thinkingFormat": "openai" } },
-          { "id": "kimi-k2.5", "name": "kimi-k2.5", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 262144, "maxTokens": 32768, "compat": { "thinkingFormat": "openai" } }
-        ]
-      },
       "deepseek": {
         "baseUrl": "https://api.deepseek.com",
         "apiKey": "${DEEPSEEK_API_KEY}",
         "api": "openai-completions",
         "models": [
-          { "id": "deepseek-v4-flash", "name": "DeepSeek V4 Flash", "reasoning": true, "input": ["text"], "cost": { "input": 0, "output": 0, "cacheRead": 0.0028, "cacheWrite": 0 }, "contextWindow": 1000000, "maxTokens": 384000, "compat": { "thinkingFormat": "openai" } },
-          { "id": "deepseek-v4-pro", "name": "DeepSeek V4 Pro", "reasoning": true, "input": ["text"], "cost": { "input": 0, "output": 0, "cacheRead": 0.003625, "cacheWrite": 0 }, "contextWindow": 1000000, "maxTokens": 384000, "compat": { "thinkingFormat": "openai" } }
+          {
+            "id": "deepseek-v4-flash",
+            "name": "DeepSeek V4 Flash",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0.0028,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 384000,
+            "compat": {
+              "thinkingFormat": "openai"
+            }
+          },
+          {
+            "id": "deepseek-v4-pro",
+            "name": "DeepSeek V4 Pro",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0.003625,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 384000,
+            "compat": {
+              "thinkingFormat": "openai"
+            }
+          }
         ]
       },
       "9router": {
@@ -580,12 +597,78 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
         "apiKey": "${NINEROUTER_API_KEY}",
         "api": "openai-completions",
         "models": [
-          { "id": "cx/gpt-5.5", "name": "GPT-5.5 (9router)", "api": "openai-completions", "reasoning": true, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1048576, "maxTokens": 65536 },
-          { "id": "cx/gpt-5.4", "name": "GPT-5.4 (9router)", "api": "openai-completions", "reasoning": true, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1048576, "maxTokens": 65536 },
-          { "id": "cx/gpt-5.3-codex", "name": "GPT-5.3 Codex (9router)", "api": "openai-completions", "reasoning": true, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1048576, "maxTokens": 65536 },
-          { "id": "cx/gpt-5.3-codex-high", "name": "GPT-5.3 Codex High (9router)", "api": "openai-completions", "reasoning": true, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1048576, "maxTokens": 65536 },
-          { "id": "cx/gpt-5.3-codex-xhigh", "name": "GPT-5.3 Codex Xhigh (9router)", "api": "openai-completions", "reasoning": true, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1048576, "maxTokens": 65536 },
-          { "id": "openclaw-edutechnd-org", "name": "OpenClaw EduTechND Org (9router)", "api": "openai-completions", "reasoning": false, "input": ["text", "image"], "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }, "contextWindow": 1048576, "maxTokens": 65536 }
+          {
+            "id": "cx/gpt-5.6-sol",
+            "name": "GPT-5.6-sol (9router)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          },
+          {
+            "id": "cx/gpt-5.5",
+            "name": "GPT-5.5 (9router)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          },
+          {
+            "id": "cx/gpt-5.4",
+            "name": "GPT-5.4 (9router)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          },
+          {
+            "id": "openclaw-edutechnd-org",
+            "name": "OpenClaw EduTechND Org (9router)",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 65536
+          }
         ]
       }
     }
@@ -608,45 +691,63 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
       "mode": "token",
       "token": "${OPENCLAW_GATEWAY_TOKEN}"
     },
-    "trustedProxies": [ "0.0.0.0/0" ],
-    "tailscale": { "mode": "off", "resetOnExit": false }
+    "trustedProxies": [
+      "0.0.0.0/0"
+    ],
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
   },
   "agents": {
     "defaults": {
       "model": {
-        "primary": "9router/cx/gpt-5.4",
-        "fallbacks": [ "9router/openclaw-edutechnd-org" ]
+        "primary": "9router/cx/gpt-5.6-sol",
+        "fallbacks": [
+          "9router/openclaw-edutechnd-org"
+        ]
       },
       "models": {
-        "moonshot/kimi-k2.6": { "alias": "Kimi" },
-        "moonshot/kimi-k2.5": { "alias": "Kimi K2.5" },
-        "claudible/claude-sonnet-4.6": {},
-        "claudible/claude-opus-4.7": {},
-        "claudible/claude-opus-4.6": {},
-        "claudible/gpt-5.5": {},
-        "claudible/gpt-5.4": {},
-        "claudible/gpt-5.3-codex": {},
-        "9router/cx/gpt-5.5": { "alias": "gpt-5.5 - 9router" },
-        "9router/cx/gpt-5.4": { "alias": "gpt-5.4 - 9router" },
-        "9router/cx/gpt-5.3-codex-xhigh": { "alias": "gpt-5.3-codex-xhigh - 9router" },
-        "9router/cx/gpt-5.3-codex-high": { "alias": "gpt-5.3-codex-high - 9router" },
-        "9router/cx/gpt-5.3-codex": { "alias": "gpt-5.3-codex - 9router" },
-        "9router/openclaw-edutechnd-org": { "alias": "OpenClaw EduTechND Org" },
-        "bailian/qwen3.6-plus": { "alias": "qwen3.6-plus" },
-        "bailian/qwen3.5-plus": { "alias": "qwen3.5-plus" },
-        "bailian/glm-5": { "alias": "glm-5" },
-        "bailian/kimi-k2.5": { "alias": "kimi-k2.5" },
-        "bailian/MiniMax-M2.5": { "alias": "minimax-m2.5" },
+        "9router/cx/gpt-5.5": {
+          "alias": "gpt-5.5 - 9router"
+        },
+        "9router/cx/gpt-5.4": {
+          "alias": "gpt-5.4 - 9router"
+        },
+        "9router/cx/gpt-5.6-sol": {
+          "alias": "gpt-5.6-sol - 9router"
+        },
         "deepseek/deepseek-v4-flash": {},
         "deepseek/deepseek-v4-pro": {},
-        "openai/gpt-5.5": { "agentRuntime": { "id": "codex" } },
-        "openai/gpt-5.4": { "agentRuntime": { "id": "codex" } }
+		"openai/gpt-5.6-sol": {
+          "agentRuntime": {
+            "id": "codex"
+          }
+        },
+        "openai/gpt-5.5": {
+          "agentRuntime": {
+            "id": "codex"
+          }
+        },
+        "openai/gpt-5.4": {
+          "agentRuntime": {
+            "id": "codex"
+          }
+        }
       },
       "workspace": "/home/node/.openclaw/workspace",
-      "compaction": { "mode": "safeguard" },
+      "compaction": {
+        "mode": "safeguard"
+      },
       "maxConcurrent": 4,
-      "subagents": { "maxConcurrent": 8 },
-      "sandbox": { "browser": { "enabled": true } },
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "sandbox": {
+        "browser": {
+          "enabled": true
+        }
+      },
       "bootstrapMaxChars": 30000,
       "bootstrapTotalMaxChars": 300000
     },
@@ -656,8 +757,10 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
         "default": true,
         "workspace": "/home/node/.openclaw/workspace",
         "model": {
-          "primary": "9router/cx/gpt-5.4",
-          "fallbacks": [ "9router/openclaw-edutechnd-org" ]
+          "primary": "9router/cx/gpt-5.5",
+          "fallbacks": [
+            "9router/openclaw-edutechnd-org"
+          ]
         },
         "skills": [
           "supertonic-tts",
@@ -669,8 +772,10 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
           "obsidian-vault-maintainer",
           "wiki-maintainer"
         ],
-        "identity": { "name": "ELLY TIỂU MY", "emoji": "✨" },
-        "instructions": "Bạn đang chạy trong Docker với user node. BẠN CÓ QUYỀN SUDO KHÔNG CẦN MẬT KHẨU. Nếu người dùng yêu cầu cài đặt thư viện hệ thống, hãy dùng lệnh sudo. Đối với lệnh bình thường, hãy tự động dùng exec. ĐỐI VỚI LỆNH SUDO, BẮT BUỘC phải chat hỏi người dùng trước. QUAN TRỌNG HƠN: Khi giao việc cho subagent qua tool agentToAgent, bạn PHẢI phân rã tác vụ, cung cấp bối cảnh cụ thể, yêu cầu rõ ràng và định dạng đầu ra mong muốn. Tuyệt đối không giao task mập mờ.",
+        "identity": {
+          "name": "ELLY TIỂU MY",
+          "emoji": "✨"
+        },
         "subagents": {
           "allowAgents": [
             "latex-edutechnd",
@@ -680,80 +785,191 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
             "prompt-edutechnd"
           ]
         },
-        "tools": { "profile": "full" }
+        "tools": {
+          "profile": "full"
+        }
       },
       {
         "id": "latex-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/latex-edutechnd",
-        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
-        "models": { "openai/gpt-5.5": { "agentRuntime": { "id": "codex" } } },
-        "skills": [ "exam-latex-creator" ],
-        "identity": { "name": "LATEX_MASTER", "emoji": "📐" },
-        "instructions": "Bạn là chuyên gia về LaTeX. Nhiệm vụ duy nhất của bạn là xử lý, tạo và biên dịch tài liệu LaTeX. Tuân thủ tuyệt đối yêu cầu đầu vào, luôn trả về kết quả định dạng chuẩn xác, tránh lan man ngoài chuyên môn.",
-        "subagents": { "allowAgents": [] },
-        "tools": { "profile": "full" }
+        "model": {
+          "primary": "9router/cx/gpt-5.5",
+          "fallbacks": [
+            "9router/openclaw-edutechnd-org"
+          ]
+        },
+        "skills": [
+          "exam-latex-creator"
+        ],
+        "identity": {
+          "name": "LATEX_MASTER",
+          "emoji": "📐"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        },
+        "models": {
+          "openai/gpt-5.5": {
+            "agentRuntime": {
+              "id": "codex"
+            }
+          }
+        }
       },
       {
         "id": "coder-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/coder-edutechnd",
-        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
-        "skills": [ "oop-pyqt6-apps", "manim-learning-roadmap" ],
-        "identity": { "name": "CODER", "emoji": "💻" },
-        "instructions": "Bạn là Lập trình viên Senior. Bạn chỉ tập trung viết code, debug, tạo script và ứng dụng phần mềm. Hãy viết code tối ưu, chia nhỏ component, có comment rõ ràng. Chỉ giải thích kỹ thuật khi thực sự cần thiết.",
-        "subagents": { "allowAgents": [] },
-        "tools": { "profile": "full" }
+        "model": {
+          "primary": "9router/cx/gpt-5.5",
+          "fallbacks": [
+            "9router/openclaw-edutechnd-org"
+          ]
+        },
+        "skills": [
+          "oop-pyqt6-apps",
+          "manim-learning-roadmap"
+        ],
+        "identity": {
+          "name": "CODER",
+          "emoji": "💻"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
       },
       {
         "id": "english-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/english-edutechnd",
-        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
-        "identity": { "name": "TEACHER_ENG", "emoji": "🇬🇧" },
-        "instructions": "Bạn là giáo viên tiếng Anh xuất sắc. Chuyên môn của bạn là dịch thuật chuẩn ngữ cảnh, sửa lỗi ngữ pháp, và giải thích từ vựng tiếng Anh. Luôn bám sát task và cung cấp ví dụ thực tiễn dễ hiểu.",
-        "subagents": { "allowAgents": [] },
-        "tools": { "profile": "full" }
+        "model": {
+          "primary": "9router/cx/gpt-5.5",
+          "fallbacks": [
+            "9router/openclaw-edutechnd-org"
+          ]
+        },
+        "identity": {
+          "name": "TEACHER_ENG",
+          "emoji": "🇬🇧"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
       },
       {
         "id": "office-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/office-edutechnd",
-        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
-        "skills": [ "gdrive-openclaw-uploader" ],
-        "identity": { "name": "SECRETARY", "emoji": "📋" },
-        "instructions": "Bạn là thư ký hành chính thông minh. Nhiệm vụ của bạn là sắp xếp, xử lý văn bản, tài liệu, và thao tác với Google Drive/Cloud. Luôn làm việc cẩn thận, chính xác và báo cáo lại kết quả/đường dẫn rõ ràng.",
-        "subagents": { "allowAgents": [] },
-        "tools": { "profile": "full" }
+        "model": {
+          "primary": "9router/cx/gpt-5.5",
+          "fallbacks": [
+            "9router/openclaw-edutechnd-org"
+          ]
+        },
+        "skills": [
+          "gdrive-openclaw-uploader"
+        ],
+        "identity": {
+          "name": "SECRETARY",
+          "emoji": "📋"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
       },
       {
         "id": "prompt-edutechnd",
         "workspace": "/home/node/.openclaw/workspace/prompt-edutechnd",
-        "model": { "primary": "9router/cx/gpt-5.4", "fallbacks": [ "9router/openclaw-edutechnd-org" ] },
-        "skills": [ "prompt-image-creator", "prompt-video-creator", "codex-imagen", "supertonic-tts" ],
-        "identity": { "name": "ART_DIRECTOR", "emoji": "🎨" },
-        "instructions": "Bạn là Giám đốc Nghệ thuật (Art Director). Chuyên môn của bạn là phân tích yêu cầu sáng tạo, viết prompt cực kỳ tối ưu cho AI tạo ảnh/video/âm thanh, sau đó gọi tool thiết kế. Đặt tính thẩm mỹ và mô tả cụ thể lên hàng đầu.",
-        "subagents": { "allowAgents": [] },
-        "tools": { "profile": "full" }
+        "model": {
+          "primary": "9router/cx/gpt-5.5",
+          "fallbacks": [
+            "9router/openclaw-edutechnd-org"
+          ]
+        },
+        "skills": [
+          "prompt-image-creator",
+          "prompt-video-creator",
+          "codex-imagen",
+          "supertonic-tts"
+        ],
+        "identity": {
+          "name": "ART_DIRECTOR",
+          "emoji": "🎨"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "tools": {
+          "profile": "full"
+        }
       }
     ]
   },
   "bindings": [
-    { "agentId": "main", "match": { "channel": "telegram" } },
-    { "agentId": "main", "match": { "channel": "discord" } },
-    { "agentId": "main", "match": { "channel": "openzalo" } }
+    {
+      "agentId": "main",
+      "match": {
+        "channel": "telegram"
+      }
+    },
+    {
+      "agentId": "main",
+      "match": {
+        "channel": "discord"
+      }
+    },
+    {
+      "agentId": "main",
+      "match": {
+        "channel": "openzalo"
+      }
+    }
   ],
   "tools": {
     "profile": "coding",
-    "web": { "search": { "enabled": true, "provider": "kimi" } },
-    "sessions": { "visibility": "all" },
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "kimi"
+      }
+    },
+    "sessions": {
+      "visibility": "all"
+    },
     "elevated": {
       "enabled": true,
       "allowFrom": {
-        "telegram": [ 7638885552 ],
-        "webchat": [ "openclaw-control-ui", "*" ],
-        "openzalo": [ "5853926754769804560" ],
-        "discord": [ "1407787111549112432" ]
+        "telegram": [
+          7638885552
+        ],
+        "webchat": [
+          "openclaw-control-ui",
+          "*"
+        ],
+        "openzalo": [
+          "5853926754769804560"
+        ],
+        "discord": [
+          "1407787111549112432"
+        ]
       }
     },
-    "exec": { "security": "full", "ask": "off" },
-    "alsoAllow": [ "browser" ],
+    "exec": {
+      "security": "full",
+      "ask": "off"
+    },
+    "alsoAllow": [
+      "browser"
+    ],
     "agentToAgent": {
       "enabled": true,
       "allow": [
@@ -779,23 +995,51 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
       "telegram"
     ],
     "entries": {
-      "telegram": { "enabled": true },
-      "openzalo": { "enabled": true },
-      "discord": { "enabled": true },
+      "telegram": {
+        "enabled": true
+      },
+      "openzalo": {
+        "enabled": true
+      },
+      "discord": {
+        "enabled": true
+      },
       "moonshot": {
         "enabled": true,
-        "config": { "webSearch": { "apiKey": "${KIMI_API_KEY}" } }
+        "config": {
+          "webSearch": {
+            "apiKey": "${KIMI_API_KEY}"
+          }
+        }
       },
-      "openai": { "enabled": true },
-      "browser": { "enabled": true },
-      "memory-wiki": { "enabled": true },
-      "neuralmemory": { "enabled": false },
-      "deepseek": { "enabled": true },
-      "codex": { "enabled": true },
-      "github-copilot": { "enabled": true },
-      "camofox-browser": { "enabled": false }
+      "openai": {
+        "enabled": true
+      },
+      "browser": {
+        "enabled": true
+      },
+      "memory-wiki": {
+        "enabled": true
+      },
+      "neuralmemory": {
+        "enabled": false
+      },
+      "deepseek": {
+        "enabled": true
+      },
+      "codex": {
+        "enabled": true
+      },
+      "github-copilot": {
+        "enabled": true
+      },
+      "camofox-browser": {
+        "enabled": false
+      }
     },
-    "slots": { "memory": "memory-wiki" },
+    "slots": {
+      "memory": "memory-wiki"
+    },
     "bundledDiscovery": "allowlist"
   },
   "env": {
@@ -813,61 +1057,170 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
   },
   "skills": {
     "entries": {
-      "1password": { "enabled": false },
-      "notion": { "enabled": true, "apiKey": "${NOTION_API_KEY}" },
-      "apple-notes": { "enabled": false },
-      "apple-reminders": { "enabled": false },
-      "bear-notes": { "enabled": false },
-      "blogwatcher": { "enabled": false },
-      "blucli": { "enabled": false },
-      "bluebubbles": { "enabled": false },
-      "camsnap": { "enabled": false },
-      "clawhub": { "enabled": false },
-      "coding-agent": { "enabled": true },
-      "eightctl": { "enabled": false },
-      "gh-issues": { "enabled": false },
-      "gifgrep": { "enabled": false },
-      "github": { "enabled": true },
-      "gog": { "enabled": true },
-      "goplaces": { "enabled": false },
-      "himalaya": { "enabled": false },
-      "imsg": { "enabled": false },
-      "mcporter": { "enabled": false },
-      "model-usage": { "enabled": false },
-      "nano-pdf": { "enabled": false },
-      "obsidian": { "enabled": false },
-      "openai-whisper": { "enabled": false },
-      "openhue": { "enabled": false },
-      "oracle": { "enabled": false },
-      "ordercli": { "enabled": false },
-      "peekaboo": { "enabled": false },
-      "sag": { "enabled": false },
-      "session-logs": { "enabled": false },
-      "sherpa-onnx-tts": { "enabled": false },
-      "slack": { "enabled": false },
-      "songsee": { "enabled": false },
-      "sonoscli": { "enabled": false },
-      "spotify-player": { "enabled": false },
-      "summarize": { "enabled": false },
-      "things-mac": { "enabled": false },
-      "tmux": { "enabled": false },
-      "trello": { "enabled": false },
-      "voice-call": { "enabled": false },
-      "wacli": { "enabled": false },
-      "xurl": { "enabled": false },
-      "prompt-image-creator": { "enabled": true },
-      "exam-latex-creator": { "enabled": true },
-      "prompt-video-creator": { "enabled": true },
-      "gdrive-openclaw-uploader": { "enabled": true },
-      "camofox-browser": { "enabled": false },
-      "codex-imagen": { "enabled": true },
-      "crawl4ai-crawler": { "enabled": false },
-      "oop-pyqt6-apps": { "enabled": true },
-      "supertonic-tts": { "enabled": true },
-      "manim-learning-roadmap": { "enabled": true }
+      "1password": {
+        "enabled": false
+      },
+      "notion": {
+        "enabled": true,
+        "apiKey": "${NOTION_API_KEY}"
+      },
+      "apple-notes": {
+        "enabled": false
+      },
+      "apple-reminders": {
+        "enabled": false
+      },
+      "bear-notes": {
+        "enabled": false
+      },
+      "blogwatcher": {
+        "enabled": false
+      },
+      "blucli": {
+        "enabled": false
+      },
+      "bluebubbles": {
+        "enabled": false
+      },
+      "camsnap": {
+        "enabled": false
+      },
+      "clawhub": {
+        "enabled": false
+      },
+      "coding-agent": {
+        "enabled": true
+      },
+      "eightctl": {
+        "enabled": false
+      },
+      "gh-issues": {
+        "enabled": false
+      },
+      "gifgrep": {
+        "enabled": false
+      },
+      "github": {
+        "enabled": true
+      },
+      "gog": {
+        "enabled": true
+      },
+      "goplaces": {
+        "enabled": false
+      },
+      "himalaya": {
+        "enabled": false
+      },
+      "imsg": {
+        "enabled": false
+      },
+      "mcporter": {
+        "enabled": false
+      },
+      "model-usage": {
+        "enabled": false
+      },
+      "nano-pdf": {
+        "enabled": false
+      },
+      "obsidian": {
+        "enabled": false
+      },
+      "openai-whisper": {
+        "enabled": false
+      },
+      "openhue": {
+        "enabled": false
+      },
+      "oracle": {
+        "enabled": false
+      },
+      "ordercli": {
+        "enabled": false
+      },
+      "peekaboo": {
+        "enabled": false
+      },
+      "sag": {
+        "enabled": false
+      },
+      "session-logs": {
+        "enabled": false
+      },
+      "sherpa-onnx-tts": {
+        "enabled": false
+      },
+      "slack": {
+        "enabled": false
+      },
+      "songsee": {
+        "enabled": false
+      },
+      "sonoscli": {
+        "enabled": false
+      },
+      "spotify-player": {
+        "enabled": false
+      },
+      "summarize": {
+        "enabled": false
+      },
+      "things-mac": {
+        "enabled": false
+      },
+      "tmux": {
+        "enabled": false
+      },
+      "trello": {
+        "enabled": false
+      },
+      "voice-call": {
+        "enabled": false
+      },
+      "wacli": {
+        "enabled": false
+      },
+      "xurl": {
+        "enabled": false
+      },
+      "prompt-image-creator": {
+        "enabled": true
+      },
+      "exam-latex-creator": {
+        "enabled": true
+      },
+      "prompt-video-creator": {
+        "enabled": true
+      },
+      "gdrive-openclaw-uploader": {
+        "enabled": true
+      },
+      "camofox-browser": {
+        "enabled": false
+      },
+      "codex-imagen": {
+        "enabled": true
+      },
+      "crawl4ai-crawler": {
+        "enabled": false
+      },
+      "oop-pyqt6-apps": {
+        "enabled": true
+      },
+      "supertonic-tts": {
+        "enabled": true
+      },
+      "manim-learning-roadmap": {
+        "enabled": true
+      }
     }
   },
-  "messages": { "groupChat": { "visibleReplies": "automatic" } },
+  "messages": {
+    "groupChat": {
+      "visibleReplies": "automatic"
+    }
+  },
   "wizard": {
     "lastRunAt": "2026-05-24T12:17:30.566Z",
     "lastRunVersion": "2026.5.20",
@@ -878,8 +1231,13 @@ cat > data/openclaw/openclaw.json << 'JSON_EOF'
     "servers": {
       "notionApi": {
         "command": "npx",
-        "args": [ "-y", "@notionhq/notion-mcp-server" ],
-        "env": { "NOTION_TOKEN": "${NOTION_TOKEN}" }
+        "args": [
+          "-y",
+          "@notionhq/notion-mcp-server"
+        ],
+        "env": {
+          "NOTION_TOKEN": "${NOTION_TOKEN}"
+        }
       }
     }
   }

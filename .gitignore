@@ -1,25 +1,90 @@
-# Environment files - chứa API keys và secrets, KHÔNG push lên GitHub
+# ===== SECRETS - TUYỆT ĐỐI KHÔNG COMMIT =====
 .env
 .env.*
-*.env
+!.env.example
+*.key
+*.pem
+*.crt
+credentials.json
+token.json
+config.local.*
+auth/
+secrets/
 
-# Node modules
-node_modules/
+# ===== SESSION / ĐĂNG NHẬP KÊNH =====
+sessions/
+.wwebjs_auth/
+.wwebjs_cache/
+openzca/
+zalo_session*
+telegram_session*
+*.session
 
-# Logs
-*.log
+# ===== DỮ LIỆU RUNTIME =====
+data/
+storage/
+uploads/
+downloads/
+temp/
+tmp/
+cache/
+.cache/
 logs/
+*.log
 
-# OS files
+# ===== DATABASE =====
+*.db
+*.sqlite
+*.sqlite3
+postgres_data/
+pgdata/
+redis_data/
+qdrant_data/
+*.dump
+*.sql.gz
+
+# ===== PHỤ THUỘC =====
+node_modules/
+__pycache__/
+*.pyc
+venv/
+.venv/
+env/
+.pnpm-store/
+
+# ===== LATEX BUILD =====
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.bbl
+*.blg
+latex-output/*.pdf
+
+# ===== MEDIA NẶNG =====
+*.mp4
+*.mkv
+*.iso
+*.tar
+*.tar.gz
+*.zip
+
+# ===== HỆ THỐNG =====
 .DS_Store
 Thumbs.db
-
-# IDE files
-.vscode/
 .idea/
-*.swp
-*.swo
+.vscode/
 
-# Build output
-dist/
-build/
+# Secrets — không bao giờ commit
+.env
+.env.*
+secrets.env
+*.key
+*.pem
+data/
+.env_*
+9router/.env
+9router/

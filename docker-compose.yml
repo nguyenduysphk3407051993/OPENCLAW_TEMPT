@@ -1,33 +1,29 @@
 services:
-  # ==========================================
-  # PostgreSQL + pgvector
-  # ==========================================
   postgres:
     image: pgvector/pgvector:pg16
     container_name: openclaw-postgres
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER:-openclaw}
-      POSTGRES_PASSWORD: ${DB_PASS:-securepassword}
-      POSTGRES_DB: ${DB_NAME:-openclaw_memory}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
-      - ${POSTGRES_DATA_DIR:-./data/postgres}:/var/lib/postgresql/data
+      - ${POSTGRES_DATA_DIR}:/var/lib/postgresql/data
     networks:
       - traefik-net
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-openclaw} -d ${DB_NAME:-openclaw_memory}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 5s
       timeout: 5s
       retries: 10
 
-  # ==========================================
-  # OpenClaw Gateway
-  # ==========================================
   openclaw-gateway:
     build:
       context: .
-      dockerfile: docker/Dockerfile  
-    image: openclaw:latest
+      dockerfile: docker/Dockerfile
+      args:
+        OPENCLAW_BASE_IMAGE: ${OPENCLAW_BASE_IMAGE:-ghcr.io/openclaw/openclaw:latest}
+    image: openclaw:edutechnd
     container_name: openclaw-gateway
     restart: unless-stopped
     depends_on:
@@ -36,47 +32,38 @@ services:
     expose:
       - "18789"
     volumes:
-      - ${OPENCLAW_DATA_DIR:-./data/openclaw}:/home/openclaw/.openclaw
-      - ${OPENCLAW_OPENZCA_DIR:-./data/openzca}:/home/openclaw/.openzca
-      - ${OPENCLAW_DOWNLOADS_DIR:-./data/downloads}:/home/openclaw/downloads
+      - ${OPENCLAW_DATA_DIR:-./data/openclaw}:/home/node/.openclaw
+      - ${OPENCLAW_OPENZCA_DIR:-./data/openzca}:/home/node/.openzca
+      - /etc/localtime:/etc/localtime:ro
     env_file: .env
     environment:
       - NODE_ENV=production
-      - OPENCLAW_GATEWAY_MODE=remote
-      - GATEWAY_TRUSTED_PROXIES=0.0.0.0/0
-      - OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
-      # --- Database ---
+      - TZ=Asia/Ho_Chi_Minh
+      - HOME=/home/node
+      - OPENCLAW_STATE_DIR=/home/node/.openclaw
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_USER=${DB_USER:-openclaw}
-      - DB_PASS=${DB_PASS:-securepassword}
-      - DB_NAME=${DB_NAME:-openclaw_memory}
-      # --- Memory & Vector ---
-      - MEMORY_TYPE=postgres
-      - MEMORY_BACKEND=postgres
-      - VECTOR_STORE=pgvector
-      - EMBEDDING_PROVIDER=openai
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      # --- Config Plugins & Channels ---
-      - 'OPENCLAW_CHANNELS_OPENZALO_ALLOWFROM=["*"]'
-    command: [ "gateway", "--bind", "lan" ]
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+      - CAMOFOX_ACCESS_KEY=${CAMOFOX_ACCESS_KEY}
+      - CAMOFOX_API_KEY=${CAMOFOX_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
     networks:
       - traefik-net
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.openclaw.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)"
       - "traefik.http.routers.openclaw.entrypoints=websecure"
-      - "traefik.http.routers.openclaw.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.openclaw.tls.certresolver=myresolver"
       - "traefik.http.services.openclaw.loadbalancer.server.port=18789"
       - "traefik.http.middlewares.openclaw-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.middlewares.openclaw-compress.compress=true"
       - "traefik.http.routers.openclaw.middlewares=openclaw-headers,openclaw-compress"
 
-  # ==========================================
-  # OpenClaw CLI (dùng chung image đã build)
-  # ==========================================
   openclaw-cli:
-    image: openclaw:latest
+    image: openclaw:edutechnd
     container_name: openclaw-cli
     depends_on:
       postgres:
@@ -84,30 +71,28 @@ services:
       openclaw-gateway:
         condition: service_started
     volumes:
-      - ${OPENCLAW_DATA_DIR:-./data/openclaw}:/home/openclaw/.openclaw
-      - ${OPENCLAW_OPENZCA_DIR:-./data/openzca}:/home/openclaw/.openzca
-      - ${OPENCLAW_DOWNLOADS_DIR:-./data/downloads}:/home/openclaw/downloads
+      - ${OPENCLAW_DATA_DIR:-./data/openclaw}:/home/node/.openclaw
+      - ${OPENCLAW_OPENZCA_DIR:-./data/openzca}:/home/node/.openzca
+      - /etc/localtime:/etc/localtime:ro
     env_file: .env
     environment:
       - NODE_ENV=production
-      - OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
+      - TZ=Asia/Ho_Chi_Minh
+      - HOME=/home/node
+      - OPENCLAW_STATE_DIR=/home/node/.openclaw
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_USER=${DB_USER:-openclaw}
-      - DB_PASS=${DB_PASS:-securepassword}
-      - DB_NAME=${DB_NAME:-openclaw_memory}
-      - MEMORY_TYPE=postgres
-      - MEMORY_BACKEND=postgres
-      - VECTOR_STORE=pgvector
-      - EMBEDDING_PROVIDER=openai
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENCLAW_ALLOW_UNCONFIGURED=true
-      - OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
     networks:
       - traefik-net
-    profiles: [ cli ]
-    stdin_open: true
+    entrypoint: ["node", "/app/dist/index.js"]
     tty: true
+    stdin_open: true
+    profiles:
+      - cli
 
 networks:
   traefik-net:
