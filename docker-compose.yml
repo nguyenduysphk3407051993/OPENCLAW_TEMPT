@@ -64,6 +64,8 @@ services:
 
   openclaw-cli:
     image: openclaw:edutechnd
+    entrypoint: ["tini", "--"]
+    command: ["sleep", "infinity"]
     container_name: openclaw-cli
     depends_on:
       postgres:
@@ -86,7 +88,6 @@ services:
       - DB_PASS=${DB_PASS}
       - DB_NAME=${DB_NAME}
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
-      - OPENCLAW_GATEWAY_URL=${OPENCLAW_GATEWAY_URL}
     networks:
       - traefik-net
     profiles: [ cli ]
