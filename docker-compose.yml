@@ -86,13 +86,12 @@ services:
       - DB_PASS=${DB_PASS}
       - DB_NAME=${DB_NAME}
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - OPENCLAW_GATEWAY_URL=${OPENCLAW_GATEWAY_URL}
     networks:
       - traefik-net
-    entrypoint: ["node", "/app/dist/index.js"]
-    tty: true
+    profiles: [ cli ]
     stdin_open: true
-    profiles:
-      - cli
+    tty: true
 
 networks:
   traefik-net:
